@@ -2,6 +2,12 @@
 
 The demo is automatic and starts at the timestamp recorded on first plugin installation. The Print Service persists that trial state independently. The Professional license is perpetual for major version 1 and is bound to the GLPI installation ID.
 
+## Public source and one-time sale
+
+The repository and both product components are licensed under **GPL-2.0-or-later**. The official source is public and users may modify and redistribute it under the GPL terms. The project may charge a one-time fee for the official Professional activation and official distribution. That fee cannot remove recipients' GPL rights, and the license check is not a technical barrier against modified forks. Do not market it as exclusive control over all copies or derivatives.
+
+The planned Professional purchase is a one-time payment for perpetual use of the official Professional release within major version 1.x. License files are installation-bound and verified offline; there is no license server or recurring activation check. The exact price, refund terms, and transfer/reissue policy must be published before taking payment.
+
 ## Create the signing key once
 
 Run the key generator in a protected operator environment that has the Print Service Python dependencies installed:

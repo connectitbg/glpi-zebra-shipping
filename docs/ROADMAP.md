@@ -25,8 +25,11 @@
 - Keep the license signing key in a private operator environment.
 - [x] Add basic license administration, professional activation, demo restrictions, and trial persistence.
 - [x] Document offline signing-key operations, licensing, installation, and secret handling.
+- [x] Select GPL-2.0-or-later for public source and a one-time Professional activation model for the official build.
 - [ ] Finalize transfer/reissue policy and test upgrade behavior across all release schemas.
-- [ ] Resolve the community-catalog open-source requirement versus the chosen proprietary license.
+- [ ] Publish the repository publicly and create/submit catalog XML metadata.
+- [ ] Set the one-time price, refund terms, transfer/reissue policy, and support commitment before taking payment.
+- [ ] Confirm GLPI developer/partner eligibility for Marketplace review.
 - [ ] Review dependency ownership and commercial distribution rights.
 - [x] Build a clean versioned plugin archive (0.2.2) and Print Service archive (0.2.0).
 

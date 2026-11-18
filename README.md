@@ -1,8 +1,8 @@
 # GLPI Zebra Shipping
 
-Commercial shipping-label product for GLPI 11 and Zebra network printers.
+Open-source shipping-label printing from GLPI 11 to administrator-configured Zebra network printers.
 
-This repository is being rebuilt from the project handoff. The earlier implementation files and production server are not present in this workspace, so this is a new codebase rather than a port of the deployed code.
+The current `0.2.2` build is a test build. A ZD421 received a synthetic label, but its physical layout, Cyrillic rendering, and media fit have not yet been visually checked. Do not use this build for production shipments.
 
 ## Product decisions
 
@@ -11,17 +11,24 @@ This repository is being rebuilt from the project handoff. The earlier implement
 - Trial state must live outside the plugin directory and survive upgrades/reinstalls.
 - Professional license: perpetual for major version 1.x, verified offline with Ed25519.
 - Professional includes multiple printers.
+- The project is licensed under GPL-2.0-or-later. A one-time Professional sale may be offered for the official build; it cannot take away the GPL rights to modify and redistribute the source.
 - No production printer IP, service token, private signing key, or customer data belongs in this repository.
+
+## Install and configure
+
+See [installation and configuration](docs/INSTALLATION.md). The GLPI plugin and Print Service are separate packages. Administrators configure printer addresses in the plugin; no printer address is preconfigured in the source.
 
 ## Components
 
 - `plugin/`: GLPI plugin. It owns GLPI permissions, shipment form/history, printer selection, trial/license state, and print-service requests.
 - `print-service/`: localhost service that validates requests and licenses, renders ZPL, and sends jobs to registered printers.
 - `licensing/`: offline license format and operator-side signing utility. The signing key is never shipped to customers.
-- `docs/`: installation, configuration, security, and release procedures.
+- `docs/`: installation, configuration, security, licensing, test reports, and publication preparation.
 
-The service and plugin are not yet production ready. Marketplace compatibility, commercial distribution terms, and the existing dependency license obligations must be reviewed before publishing or selling a release. GLPI's public plugin catalog and its Marketplace have separate publication and review processes.
+GLPI Zebra Shipping is licensed under GPL-2.0-or-later. The planned Professional option is a one-time purchase for perpetual use of the official major version 1.x release, verified offline. GPL recipients keep the right to modify and redistribute source under the GPL; a Professional key cannot restrict modified forks.
+
+The physical label review, GLPI coding/security/upgrade reviews, one-time price, refund/transfer policy, and support commitment remain open. See [commercial readiness](docs/COMMERCIAL_READINESS.md) before treating the test build as a release.
 
 ## Development status
 
-Implementation in progress. The current source is a clean-room rebuild based on the handoff, not a copy of the prior production deployment. Do not install this version on a production GLPI instance.
+The source is being prepared for the GLPI plugins catalog. Marketplace availability requires a separate GLPI review and is not automatic.

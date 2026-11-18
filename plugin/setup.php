@@ -17,7 +17,7 @@ function plugin_version_zebrashipping(): array
         'name'         => 'GLPI Zebra Shipping',
         'version'      => PLUGIN_ZEBRASHIPPING_VERSION,
         'author'       => 'GLPI Zebra Shipping',
-        'license'      => 'Commercial; distribution terms pending legal review',
+        'license'      => 'GPL-2.0-or-later',
         'requirements' => [
             'glpi' => ['min' => '11.0'],
             'php'  => ['min' => '8.2'],

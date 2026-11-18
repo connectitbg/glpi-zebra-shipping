@@ -1,6 +1,6 @@
 # GLPI catalog and Marketplace submission draft
 
-This is a preparation document only. It is not a submission, and the source repository remains private.
+This is a preparation document only. It is not a submission. The repository is not public yet.
 
 ## Draft catalog details
 
@@ -9,8 +9,8 @@ This is a preparation document only. It is not a submission, and the source repo
 - Current plugin version: `0.2.2` (test build; not a release candidate)
 - GLPI compatibility tested: GLPI `11.0.9`; declared minimum: `11.0`
 - Plugin source: <https://github.com/connectitbg/glpi-zebra-shipping> (private; not catalog-ready)
-- License: unresolved. Do not publish until the owner selects a distribution and license model.
-- Publisher/support contact: unresolved.
+- License: GPL-2.0-or-later; one-time Professional sale is for the official build and does not remove GPL rights.
+- Publisher/support contact: public GitHub issues can be used initially; a monitored support address and maintenance commitment still need to be selected.
 - Logo and public screenshots: not prepared. Existing test screenshots contain environment and asset details and must not be published as-is.
 - Download URL: not available. The current ZIP is a local test artifact and is not a public, versioned release.
 
@@ -22,13 +22,13 @@ Create and print shipping labels for GLPI assets and tickets on administrator-co
 
 GLPI Zebra Shipping adds a shipping-label tab to supported GLPI assets and tickets. Users can enter recipient and destination details, select an enabled Zebra printer, and send a label through a separately installed local Print Service. Administrators configure printer addresses and media dimensions in the plugin settings; no printer address is built into the package.
 
-The demo is limited to 14 days from first installation, two enabled printers, and 50 successful print jobs. Professional licensing is designed for offline verification and does not require a license server.
+The demo is limited to 14 days from first installation, two enabled printers, and 50 successful print jobs. A one-time Professional purchase is planned for perpetual use of the official release within major version 1.x. Licensing is verified offline and does not require a license server. The source is GPL-2.0-or-later, so users retain the right to modify and redistribute the code under the GPL.
 
 The current build has been installed on a GLPI 11.0.9 test clone. A physical ZD421 test print was sent, but visual review of the printed label, dimensions, Cyrillic text, and clipping is still pending. This build must not be described as production-ready until the remaining compatibility, security, upgrade, and licensing reviews are completed.
 
 ## Remaining publication gates
 
-1. Choose and document the public catalog license, or obtain GLPI's direction for the proprietary distribution route. The code's current metadata says commercial/proprietary.
+1. Publish the source repository publicly under the selected GPL-2.0-or-later license.
 2. Confirm that the publisher satisfies GLPI's developer or trained-partner requirements for Marketplace review.
 3. Decide the publisher identity, public support address, maintenance commitment, pricing, and license transfer/reissue terms.
 4. Finish the ZD421 visual label check and any resulting patch; run the release checks and create a versioned, publicly downloadable plugin archive.
@@ -37,11 +37,10 @@ The current build has been installed on a GLPI 11.0.9 test clone. A physical ZD4
 
 ## Submission sequence from current state
 
-1. Keep this repository private while the licensing and ownership decisions are open.
-2. Complete the label review and technical release checks.
-3. Resolve the distribution route and satisfy its publication prerequisites.
-4. Publish the catalog entry with the source URL, XML URL, license, supported versions, and public archive URL.
-5. After catalog acceptance, request Marketplace review. Availability is subject to GLPI review and is not automatic.
+1. Complete the label review and technical release checks.
+2. Publish the repository under GPL-2.0-or-later and create a public, versioned plugin archive.
+3. Add the XML metadata, sanitized logo, and screenshots; submit the entry to the GLPI plugins catalog.
+4. After catalog acceptance, request Marketplace review. Availability is subject to GLPI review and is not automatic.
 
 ## Official references
 

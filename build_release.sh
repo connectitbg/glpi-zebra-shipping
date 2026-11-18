@@ -21,6 +21,8 @@ cp "$ROOT/print-service/app.py" "$ROOT/print-service/requirements.txt" \
    "$ROOT/print-service/config.example.json" "$ROOT/print-service/zebrashipping.service" \
    "$ROOT/print-service/install_debian.sh" "$DIST/print-service/zebrashipping-print-service/"
 cp "$ROOT/docs/INSTALLATION.md" "$DIST/INSTALLATION.md"
+cp "$ROOT/LICENSE" "$DIST/plugin/zebrashipping/LICENSE"
+cp "$ROOT/LICENSE" "$DIST/print-service/zebrashipping-print-service/LICENSE"
 
 cd "$DIST/plugin"
 zip -qr "$DIST/glpi-zebrashipping-plugin-$PLUGIN_VERSION.zip" zebrashipping

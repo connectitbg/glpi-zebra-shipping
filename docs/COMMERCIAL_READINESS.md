@@ -1,33 +1,29 @@
 # Commercial readiness — GLPI Zebra Shipping
 
-## Current product model
+## Selected product model
 
-- The demo is local to each GLPI installation: 14 days, up to two enabled printers, and 50 successful print jobs.
-- Professional activation is designed to work offline. A private Ed25519 signing key issues installation-bound license files; the customer Print Service verifies them using a public key. There is no license server.
-- No signing key has been generated. Generate it once in an owner-controlled offline environment after deciding the product identity and license terms. Keep the private key encrypted and backed up outside Git, GLPI, and customer packages.
+- Public source under GPL-2.0-or-later; community contributions and forks may be published under the same terms.
+- One-time sale planned for the official Professional activation. The existing product design makes the license perpetual within major version 1.x, bound to a GLPI installation, and verified offline without a license server.
+- The fee does not remove recipients' GPL rights. Users can modify and redistribute the source; the Professional gate applies to the unmodified official build and is not guaranteed DRM against forks.
+- No signing key has been generated. Generate it once in an owner-controlled offline environment after product identity and final license terms are agreed. Keep the private key encrypted and backed up outside Git, GLPI, and customer packages.
 
-## Distribution decision required before publishing
+## GLPI publication path
 
-GLPI's plugin catalog submission guidance asks for a publicly accessible Git repository and an open-source license. Marketplace availability is a separate review and is not automatic. The current plugin metadata marks the product as commercial/proprietary, so it should not be submitted to the community catalog in its current form without resolving that licensing mismatch.
+GLPI's plugin catalog asks for a public Git repository, an open-source license, and XML plugin metadata. Marketplace availability is a separate review and is not automatic. After catalog acceptance, request Marketplace review from GLPI. GLPI also states that it reviews plugin authorship/developer eligibility, coding standards, ongoing maintenance, and effects on GLPI performance.
 
-Choose the intended route before publishing:
+References: [GLPI plugin catalog and Marketplace tutorial](https://glpi-developer-documentation.readthedocs.io/en/master/plugins/tutorial.html#publishing-your-plugin), [GLPI plugin/Marketplace FAQ](https://help.glpi-project.org/faq/glpi/plugins).
 
-1. **Community catalog route:** publish the source under an open-source license, then use an explicitly documented commercial model that is compatible with that license (for example, paid support or separate services). Request GLPI Marketplace review after catalog publication.
-2. **Proprietary sales route:** retain closed-source distribution and confirm an approved GLPI/partner or direct-download route with GLPI before promising Marketplace availability. Keep Git private until the publication and license terms are settled.
+## Owner decisions still needed before taking payment
 
-The catalog and Marketplace steps are described in the [GLPI plugin tutorial](https://glpi-developer-documentation.readthedocs.io/en/master/plugins/tutorial.html#publishing-your-plugin). The Marketplace review process is separate from the catalog listing.
-
-## Owner decisions still needed
-
-- Product/publisher name, public support contact, and support/maintenance commitment.
-- Distribution route and final commercial license terms; pricing and purchase process.
-- Policy for license transfers, reissues, and replacement GLPI installations.
-- Approval to create or use the public Git organization/repository and GLPI publisher contact.
-- Generate and securely retain the offline signing key after the product name and license policy are final.
+- One-time price and payment/purchase process.
+- Refund terms and policy for transferring, reissuing, or replacing an installation-bound license.
+- Public support contact and maintenance commitment.
+- Confirm GLPI developer/partner eligibility for Marketplace review.
 
 ## Technical release checks still open
 
-- Review tomorrow's physical ZD421 DEMO output, actual media dimensions, Cyrillic rendering, and clipping.
-- Complete security, dependency-license, GLPI coding-standard, privacy, and upgrade reviews before release.
-- Make the release builder reproducible on the release host and review the final archives before upload.
-- The 0.2.2 plugin and 0.2.0 Print Service are test builds; they are not a Marketplace submission.
+- Review the physical ZD421 label, media dimensions, Cyrillic rendering, and clipping; patch if needed.
+- Complete security, dependency-license, GLPI coding-standard, privacy/logging, backup/restore, and upgrade reviews.
+- Publish the Git repository publicly; prepare the catalog XML, sanitized logo and screenshots, and a versioned public plugin archive.
+- Submit to the GLPI plugin catalog; after acceptance, request separate Marketplace review.
+- The 0.2.2 plugin and 0.2.0 Print Service are test builds, not a production release or Marketplace submission.
