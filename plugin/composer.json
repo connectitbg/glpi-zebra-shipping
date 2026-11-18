@@ -1,0 +1,14 @@
+{
+  "name": "glpi-zebra/shipping-plugin",
+  "description": "Shipping labels for GLPI using Zebra network printers",
+  "type": "glpi-plugin",
+  "autoload": {
+    "psr-4": {
+      "GlpiPlugin\\Zebrashipping\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.2",
+    "ext-curl": "*"
+  }
+}

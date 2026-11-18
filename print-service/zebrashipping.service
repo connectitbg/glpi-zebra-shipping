@@ -1,0 +1,23 @@
+[Unit]
+Description=GLPI Zebra Shipping Print Service
+After=network.target
+
+[Service]
+Type=simple
+User=zebrashipping
+Group=zebrashipping
+WorkingDirectory=/opt/zebrashipping/print-service
+EnvironmentFile=/etc/zebrashipping/print-service.env
+Environment=ZEBRASHIPPING_CONFIG=/etc/zebrashipping/printers.json
+Environment=ZEBRASHIPPING_STATE_DIR=/var/lib/zebrashipping
+ExecStart=/opt/zebrashipping/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=3
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/etc/zebrashipping /var/lib/zebrashipping
+
+[Install]
+WantedBy=multi-user.target
