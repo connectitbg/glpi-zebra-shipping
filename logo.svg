@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" role="img" aria-labelledby="title">
+  <title id="title">GLPI Zebra Shipping</title>
+  <rect width="40" height="40" rx="8" fill="#2f6f45"/>
+  <path d="M8 10h24v4H8zm2 7h20v14H10z" fill="#fff"/>
+  <path d="M14 20h12v2H14zm0 4h12v2H14zm0 4h8v2h-8z" fill="#2f6f45"/>
+  <path d="M5 17h4v10H5zm26 0h4v10h-4z" fill="#9acb57"/>
+</svg>

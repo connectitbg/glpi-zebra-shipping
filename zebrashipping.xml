@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <name>GLPI Zebra Shipping</name>
+  <key>zebrashipping</key>
+  <state>beta</state>
+  <logo>https://raw.githubusercontent.com/connectitbg/glpi-zebra-shipping/main/logo.svg</logo>
+  <description>
+    <short>
+      <en>Print shipping labels from GLPI assets and tickets to administrator-configured Zebra network printers.</en>
+      <bg>Печат на товарителници от активи и заявки в GLPI към конфигурирани Zebra мрежови принтери.</bg>
+    </short>
+    <long>
+      <en><![CDATA[Adds a shipping-label tab to supported GLPI assets and tickets. Configure printers and media dimensions in the plugin, then send labels through the separately installed local Print Service. No printer address is preconfigured in the source.
+
+This is a beta release. The ZD421 test printer has received a synthetic label, but physical layout, Cyrillic rendering, and media fit are awaiting visual review.
+
+Demo: 14 days from first installation, up to two enabled printers, and 50 successful print jobs. The optional Professional activation is planned as a one-time purchase for the official major version 1.x release and is verified offline. Source is GPL-2.0-or-later.]]></en>
+      <bg><![CDATA[Добавя таб за товарителница към поддържани активи и заявки в GLPI. Администраторът конфигурира принтерите и размера на носителя, след което етикетите се изпращат чрез отделно инсталирана локална Print Service услуга. В изходния код няма предварително зададен адрес на принтер.
+
+Това е бета версия. Тестовият Zebra ZD421 получи синтетичен етикет, но визуалната проверка на оформлението, кирилицата и размера предстои.
+
+Демо: 14 дни от първата инсталация, до два активни принтера и 50 успешно изпълнени задания. Предвижда се Professional активацията да се продава еднократно за официалната версия 1.x и да се проверява офлайн. Кодът е GPL-2.0-or-later.]]></bg>
+    </long>
+  </description>
+  <homepage>https://github.com/connectitbg/glpi-zebra-shipping</homepage>
+  <download>https://github.com/connectitbg/glpi-zebra-shipping/releases</download>
+  <issues>https://github.com/connectitbg/glpi-zebra-shipping/issues</issues>
+  <readme>https://github.com/connectitbg/glpi-zebra-shipping/blob/main/README.md</readme>
+  <authors>
+    <author>ConnectIT</author>
+  </authors>
+  <versions>
+    <version>
+      <num>0.2.2</num>
+      <compatibility>~11.0.0</compatibility>
+      <download_url>https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.2/glpi-zebrashipping-plugin-0.2.2.zip</download_url>
+    </version>
+  </versions>
+  <langs>
+    <lang>en_GB</lang>
+    <lang>bg_BG</lang>
+  </langs>
+  <license>GPL v2+</license>
+  <tags>
+    <en>
+      <tag>Shipping</tag>
+      <tag>Printing</tag>
+      <tag>Zebra</tag>
+      <tag>Assets</tag>
+    </en>
+    <bg>
+      <tag>Товарителници</tag>
+      <tag>Печат</tag>
+      <tag>Zebra</tag>
+    </bg>
+  </tags>
+  <screenshots/>
+</root>
