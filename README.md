@@ -4,7 +4,7 @@ Open-source shipping-label printing from GLPI 11 to administrator-configured Zeb
 
 **Publisher:** Connect IT
 
-The current `0.2.5` build is a beta. The ZD421 test label uses 93 × 71 mm media, a large centered recipient or company heading, a larger address, and the asset name, type, inventory number, and serial number. Demo labels keep the `DEMO` mark. Do not use this build for production shipments.
+The current `0.2.6` build is a beta. The ZD421 test label uses 93 × 71 mm media, a large centered recipient or company heading, a larger address, and the asset name, type, inventory number, and serial number. These asset metadata fields are prefilled and editable before printing. Administrators can export or restore a recovery file containing the license and installation identity. Demo labels keep the `DEMO` mark. Do not use this build for production shipments.
 
 ## Product decisions
 
