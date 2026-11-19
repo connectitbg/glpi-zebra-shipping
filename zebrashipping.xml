@@ -12,14 +12,16 @@
     <long>
       <en><![CDATA[Adds a shipping-label tab to supported GLPI assets and tickets. Configure printers and media dimensions in the plugin, then send labels through the separately installed local Print Service. No printer address is preconfigured in the source.
 
-This is a beta release. The ZD421 test printer has printed successfully with 93 × 71 mm media. The label uses a large centered recipient or company heading and larger address text based on the supplied visual reference; physical confirmation of this update is pending. Demo labels retain the `DEMO` mark.
+This is a beta release. The supplied ZD421 test printer has printed successfully with 93 × 71 mm media. The label uses a large centered recipient or company heading and larger address text based on the supplied visual reference. Demo labels retain the `DEMO` mark.
 
-Demo: 14 days from first installation, up to two enabled printers, and 50 successful print jobs. The optional Professional activation is planned as a one-time purchase for the official major version 1.x release and is verified offline. Source is GPL-2.0-or-later.]]></en>
+Asset metadata fields are prefilled from GLPI and editable before printing. Administrators can save Professional licenses and export or restore a recovery file containing the license and installation identity. The recovery file does not include GLPI or printer configuration. Demo labels retain the `DEMO` mark.
+
+Demo: 14 days from first installation, up to two enabled printers, and 50 successful print jobs. Professional licenses are verified offline. Source is GPL-2.0-or-later.]]></en>
       <bg><![CDATA[Добавя таб за товарителница към поддържани активи и заявки в GLPI. Администраторът конфигурира принтерите и размера на носителя, след което етикетите се изпращат чрез отделно инсталирана локална Print Service услуга. В изходния код няма предварително зададен адрес на принтер.
 
-Това е бета версия. Тестовият Zebra ZD421 отпечата успешно етикет с носител 93 × 71 mm. Етикетът използва голямо центрирано заглавие за получател или фирма и по-едър адрес според предоставената визуална референция; физическата проверка на тази актуализация предстои. Демо етикетите запазват надписа `DEMO`.
+Това е бета версия. Тестовият Zebra ZD421 отпечата успешно етикет с носител 93 × 71 mm. Етикетът използва голямо центрирано заглавие за получател или фирма и по-едър адрес според предоставената визуална референция. Полетата с метаданните на актива се попълват от GLPI и могат да се редактират преди печат. Администраторите могат да запазват Professional лицензи и да експортират или възстановяват recovery файл с лиценза и идентификатора на инсталацията. Файлът не съдържа GLPI или принтерната конфигурация. Демо етикетите запазват надписа `DEMO`.
 
-Демо: 14 дни от първата инсталация, до два активни принтера и 50 успешно изпълнени задания. Предвижда се Professional активацията да се продава еднократно за официалната версия 1.x и да се проверява офлайн. Кодът е GPL-2.0-or-later.]]></bg>
+Демо: 14 дни от първата инсталация, до два активни принтера и 50 успешно изпълнени задания. Professional лицензите се проверяват офлайн. Кодът е GPL-2.0-or-later.]]></bg>
     </long>
   </description>
   <homepage>https://github.com/connectitbg/glpi-zebra-shipping</homepage>
@@ -30,6 +32,11 @@ Demo: 14 days from first installation, up to two enabled printers, and 50 succes
     <author>Connect IT</author>
   </authors>
   <versions>
+    <version>
+      <num>0.2.6</num>
+      <compatibility>~11.0.0</compatibility>
+      <download_url>https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.6/glpi-zebrashipping-plugin-0.2.6.zip</download_url>
+    </version>
     <version>
       <num>0.2.5</num>
       <compatibility>~11.0.0</compatibility>
