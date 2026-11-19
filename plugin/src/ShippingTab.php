@@ -69,10 +69,10 @@ final class ShippingTab extends \CommonDBTM
             self::textField('recipient', __('Recipient / office', 'zebrashipping'), '');
             self::textField('address', __('Address', 'zebrashipping'), $defaults['address']);
             self::textField('phone', __('Phone', 'zebrashipping'), '');
-            self::textField('asset_name', __('Asset name', 'zebrashipping'), $assetName, true);
-            self::textField('asset_type', __('Asset type', 'zebrashipping'), $assetType, true);
-            self::textField('inventory_number', __('Inventory number', 'zebrashipping'), $inventory, true);
-            self::textField('serial_number', __('Serial number', 'zebrashipping'), $serial, true);
+            self::textField('asset_name', __('Asset name', 'zebrashipping'), $assetName);
+            self::textField('asset_type', __('Asset type', 'zebrashipping'), $assetType);
+            self::textField('inventory_number', __('Inventory number', 'zebrashipping'), $inventory);
+            self::textField('serial_number', __('Serial number', 'zebrashipping'), $serial);
             echo '<div class="mb-3"><label for="zs_notes">' . zebrashipping_escape(__('Notes', 'zebrashipping')) . '</label>';
             echo '<textarea class="form-control" id="zs_notes" name="notes" maxlength="500"></textarea></div>';
             echo '<div class="mb-3"><label for="zs_printer">' . zebrashipping_escape(__('Printer', 'zebrashipping')) . '</label>';
@@ -105,11 +105,11 @@ final class ShippingTab extends \CommonDBTM
         return true;
     }
 
-    private static function textField(string $name, string $label, string $value, bool $readonly = false): void
+    private static function textField(string $name, string $label, string $value): void
     {
         echo '<div class="mb-3"><label for="zs_' . zebrashipping_escape($name) . '">' . zebrashipping_escape($label) . '</label>';
         echo '<input class="form-control" id="zs_' . zebrashipping_escape($name) . '" name="' . zebrashipping_escape($name)
-            . '" value="' . zebrashipping_escape($value) . '" maxlength="500"' . ($readonly ? ' readonly' : '') . '></div>';
+            . '" value="' . zebrashipping_escape($value) . '" maxlength="500"></div>';
     }
 
     private function isSupported(CommonGLPI $item): bool

@@ -71,15 +71,30 @@ final class PrintController extends AbstractController
         $licenseSettings = \Config::getConfigurationValues('plugin:zebrashipping');
         $license = $licenseSettings['license_file'] ?? null;
         $defaults = EntityDefaults::forItem($item);
+        $assetFields = [
+            'asset_name' => MetadataValue::display($item->getField('name')),
+            'asset_type' => $itemtype,
+            'inventory_number' => MetadataValue::display($item->getField('otherserial')),
+            'serial_number' => MetadataValue::display($item->getField('serial')),
+        ];
+        foreach ($assetFields as $field => $default) {
+            $form[$field] = trim($request->request->has($field)
+                ? $request->request->getString($field)
+                : $default);
+            if (mb_strlen($form[$field]) > 500) {
+                Session::addMessageAfterRedirect(__('A shipping field is too long.', 'zebrashipping'), false, ERROR);
+                \Html::back();
+            }
+        }
         $label = [
             'city' => $form['destination_city'] ?: $defaults['city'],
             'recipient' => $form['recipient'],
             'address' => $form['address'] ?: $defaults['address'],
             'phone' => $form['phone'],
-            'asset_name' => MetadataValue::display($item->getField('name')),
-            'asset_type' => $itemtype,
-            'inventory_number' => MetadataValue::display($item->getField('otherserial')),
-            'serial_number' => MetadataValue::display($item->getField('serial')),
+            'asset_name' => $form['asset_name'],
+            'asset_type' => $form['asset_type'],
+            'inventory_number' => $form['inventory_number'],
+            'serial_number' => $form['serial_number'],
             'notes' => $form['notes'],
         ];
 

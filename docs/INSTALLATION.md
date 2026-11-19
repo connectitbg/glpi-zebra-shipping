@@ -33,6 +33,12 @@ The sample configuration has `printers: []`. Add a printer later in **Setup → 
 4. In **Setup → Plugins → GLPI Zebra Shipping**, add each printer's connection settings and run the connectivity check.
 5. The 14-day demo starts from the plugin's first installation timestamp. Demo allows up to two enabled printers and 50 successful print jobs, marks labels `DEMO`, and keeps print history after expiration.
 
+### License and recovery backup
+
+On the plugin settings page, administrators can edit and save a Professional license, download a recovery JSON file, or restore from pasted recovery JSON. The recovery file contains the license (when present), installation ID, and original installation timestamp. Keep it private because it contains the customer activation license.
+
+The recovery file does not contain the GLPI database, printer configuration, API token, or Print Service SQLite state. For complete disaster recovery, back up the GLPI database, `GLPI_VAR_DIR/plugins/zebrashipping`, `/etc/zebrashipping`, and `/var/lib/zebrashipping` together. Restore the GLPI database and Print Service data first, then use the recovery panel if the plugin's installation identity or license needs restoring.
+
 ## Security and data handling
 
 - The Print Service binds to `127.0.0.1`; do not publish port 8765 on a network interface.

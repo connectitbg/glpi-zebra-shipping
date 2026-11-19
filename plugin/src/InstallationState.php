@@ -51,4 +51,61 @@ final class InstallationState
             fclose($handle);
         }
     }
+
+    /** Validate state received from an administrator-provided recovery file. */
+    public static function validate(array $state): array
+    {
+        $installationId = $state['installation_id'] ?? null;
+        $installedAt = $state['installed_at'] ?? null;
+        if (!is_string($installationId) || !preg_match('/^[a-f0-9]{40}$/', $installationId)) {
+            throw new \InvalidArgumentException('Recovery backup has an invalid installation ID.');
+        }
+        if (!is_string($installedAt) || trim($installedAt) === '') {
+            throw new \InvalidArgumentException('Recovery backup has no installation date.');
+        }
+        try {
+            $date = new \DateTimeImmutable($installedAt);
+        } catch (\Throwable $error) {
+            throw new \InvalidArgumentException('Recovery backup has an invalid installation date.', 0, $error);
+        }
+        if ($date > new \DateTimeImmutable('now', new \DateTimeZone('UTC'))) {
+            throw new \InvalidArgumentException('Installation date cannot be in the future.');
+        }
+        return [
+            'installation_id' => $installationId,
+            'installed_at' => $date->setTimezone(new \DateTimeZone('UTC'))->format(DATE_ATOM),
+        ];
+    }
+
+    /** Restore a previously exported installation ID and first-install timestamp. */
+    public static function restore(array $state): array
+    {
+        $state = self::validate($state);
+        $path = self::path();
+        $directory = dirname($path);
+        if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
+            throw new \RuntimeException('Cannot create private plugin state directory');
+        }
+        chmod($directory, 0700);
+        $handle = fopen($path, 'c+');
+        if ($handle === false) {
+            throw new \RuntimeException('Cannot open plugin installation state');
+        }
+        try {
+            if (!flock($handle, LOCK_EX)) {
+                throw new \RuntimeException('Cannot lock plugin installation state');
+            }
+            ftruncate($handle, 0);
+            rewind($handle);
+            if (fwrite($handle, json_encode($state, JSON_UNESCAPED_SLASHES)) === false) {
+                throw new \RuntimeException('Cannot write plugin installation state');
+            }
+            fflush($handle);
+            chmod($path, 0600);
+            flock($handle, LOCK_UN);
+            return $state;
+        } finally {
+            fclose($handle);
+        }
+    }
 }

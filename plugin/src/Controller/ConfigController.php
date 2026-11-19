@@ -23,14 +23,58 @@ final class ConfigController extends AbstractController
         $installState = InstallationState::get();
         $service = null;
 
+        if ($request->isMethod('GET') && $request->query->getBoolean('download_recovery')) {
+            $payload = self::recoveryPayload($installState, $license);
+            $response = new Response(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $response->headers->set('Content-Type', 'application/json; charset=utf-8');
+            $response->headers->set('Content-Disposition', 'attachment; filename="zebrashipping-recovery.json"');
+            $response->headers->set('Cache-Control', 'no-store, private');
+            return $response;
+        }
+
         try {
             $service = new ServiceClient();
             if ($request->isMethod('POST')) {
                 if ($request->request->has('save_license')) {
                     $license = trim($request->request->getString('license_file'));
+                    if (mb_strlen($license) > 8192) {
+                        throw new \InvalidArgumentException(__('License text is too long.', 'zebrashipping'));
+                    }
+                    if ($license !== '') {
+                        $licenseStatus = $service->licenseStatus($installState, $license);
+                        if (empty($licenseStatus['valid'])) {
+                            throw new \RuntimeException(__('The supplied license could not be validated.', 'zebrashipping'));
+                        }
+                    }
                     \Config::setConfigurationValues('plugin:zebrashipping', ['license_file' => $license]);
                     $settings['license_file'] = $license;
                     $messages[] = __('License saved.', 'zebrashipping');
+                } elseif ($request->request->has('restore_recovery')) {
+                    $rawBackup = trim($request->request->getString('recovery_backup'));
+                    if ($rawBackup === '' || strlen($rawBackup) > 16384) {
+                        throw new \InvalidArgumentException(__('Recovery backup is empty or too large.', 'zebrashipping'));
+                    }
+                    $backup = json_decode($rawBackup, true, 16, JSON_THROW_ON_ERROR);
+                    if (!is_array($backup)
+                        || ($backup['product'] ?? null) !== 'glpi-zebra-shipping'
+                        || ($backup['format_version'] ?? null) !== 1
+                        || !is_array($backup['installation'] ?? null)
+                        || !is_string($backup['license_file'] ?? null)
+                        || mb_strlen($backup['license_file']) > 8192) {
+                        throw new \InvalidArgumentException(__('This is not a supported Zebra Shipping recovery backup.', 'zebrashipping'));
+                    }
+                    $restoredState = InstallationState::validate($backup['installation']);
+                    $restoredLicense = trim($backup['license_file']);
+                    $restoredStatus = $service->licenseStatus($restoredState, $restoredLicense ?: null);
+                    if (empty($restoredStatus['valid'])) {
+                        throw new \RuntimeException(__('The recovery backup license or demo period is not valid.', 'zebrashipping'));
+                    }
+                    InstallationState::restore($restoredState);
+                    \Config::setConfigurationValues('plugin:zebrashipping', ['license_file' => $restoredLicense]);
+                    $installState = $restoredState;
+                    $license = $restoredLicense;
+                    $settings['license_file'] = $license;
+                    $messages[] = __('Recovery backup restored. Save a new backup after changing your license.', 'zebrashipping');
                 } elseif ($request->request->has('check_printer')) {
                     $result = $service->checkPrinter($request->request->getString('printer_id'));
                     $messages[] = !empty($result['reachable'])
@@ -135,6 +179,17 @@ final class ConfigController extends AbstractController
         echo '<textarea class="form-control" name="license_file" rows="3" autocomplete="off" spellcheck="false">'
             . self::escape($license) . '</textarea><button class="btn btn-primary mt-2" name="save_license" value="1">'
             . self::escape(__('Save license', 'zebrashipping')) . '</button></form>';
+        echo '<h3 class="mt-4">' . self::escape(__('License and recovery backup', 'zebrashipping')) . '</h3>';
+        echo '<p>' . self::escape(__('Download this recovery file and keep it in a secure location. It contains the license and installation identity, but not your GLPI database or signing key.', 'zebrashipping')) . '</p>';
+        echo '<p><a class="btn btn-outline-primary" href="' . self::escape($configUrl . '?download_recovery=1') . '">'
+            . self::escape(__('Download recovery backup', 'zebrashipping')) . '</a></p>';
+        echo '<form method="post" action="' . self::escape($configUrl) . '">';
+        self::csrfField();
+        echo '<label for="zs_recovery_backup">' . self::escape(__('Recovery backup JSON', 'zebrashipping')) . '</label>';
+        echo '<textarea class="form-control font-monospace" id="zs_recovery_backup" name="recovery_backup" rows="8" maxlength="16384" spellcheck="false">'
+            . self::escape(json_encode(self::recoveryPayload($installState, $license), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+            . '</textarea><button class="btn btn-outline-secondary mt-2" name="restore_recovery" value="1">'
+            . self::escape(__('Restore from recovery backup', 'zebrashipping')) . '</button></form>';
         echo '<p class="text-muted mt-3">' . self::escape(__('The service URL and API token are configured by the server administrator in the environment; they are never stored here or shown in this page.', 'zebrashipping')) . '</p>';
         echo '</div>';
         \Html::footer();
@@ -159,6 +214,17 @@ final class ConfigController extends AbstractController
     private static function csrfField(): void
     {
         echo '<input type="hidden" name="_glpi_csrf_token" value="' . self::escape(Session::getNewCSRFToken()) . '">';
+    }
+
+    private static function recoveryPayload(array $installation, string $license): array
+    {
+        return [
+            'format_version' => 1,
+            'product' => 'glpi-zebra-shipping',
+            'created_at' => gmdate(DATE_ATOM),
+            'installation' => InstallationState::validate($installation),
+            'license_file' => $license,
+        ];
     }
 
     private static function escape(mixed $value): string
