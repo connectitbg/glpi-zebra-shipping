@@ -4,7 +4,9 @@ Open-source shipping-label printing from GLPI 11 to administrator-configured Zeb
 
 **Publisher:** Connect IT
 
-The current `0.2.7` build is a beta. It includes per-record GLPI access checks, validated printer selection and field sizes, encrypted license storage, complete uninstall cleanup, and hardened local-service URL validation. The ZD421 test label uses 93 × 71 mm media, a large centered recipient or company heading, a larger address, and the asset name, type, inventory number, and serial number. These asset metadata fields are prefilled and editable before printing. Administrators can export or restore a recovery file containing the license and installation identity. Demo labels keep the `DEMO` mark. Do not use this build for production shipments.
+The current `0.2.7` build is a stable, working release. Physical printing has been demonstrated with a networked Zebra ZD421 using 93 × 71 mm media. Other network printers that accept ZPL over raw TCP are expected to work, but model-specific compatibility has not been verified for every printer. USB printer compatibility is unknown and unsupported; USB printing is outside the project scope and is not planned. See [printer compatibility](docs/PRINTER_COMPATIBILITY.md).
+
+The plugin includes per-record GLPI access checks, validated printer selection and field sizes, encrypted license storage, complete uninstall cleanup, and hardened local-service URL validation. Labels include a large recipient/company heading and address plus asset name, type, inventory number, and serial number. Asset metadata is prefilled and editable. Administrators can export or restore a recovery file containing the license and installation identity. Demo labels keep the `DEMO` mark.
 
 ## Product decisions
 
@@ -29,8 +31,8 @@ See [installation and configuration](docs/INSTALLATION.md). The GLPI plugin and 
 
 GLPI Zebra Shipping is licensed under GPL-2.0-or-later. The planned Professional option is a one-time purchase for perpetual use of the official major version 1.x release, verified offline. GPL recipients keep the right to modify and redistribute source under the GPL; a Professional key cannot restrict modified forks.
 
-The physical label review, GLPI coding/security/upgrade reviews, one-time price, refund/transfer policy, and support commitment remain open. See [commercial readiness](docs/COMMERCIAL_READINESS.md) before treating the test build as a release.
+The one-time price, refund/transfer policy, and public support commitment remain open. See [commercial readiness](docs/COMMERCIAL_READINESS.md).
 
 ## Development status
 
-The source is being prepared for the GLPI plugins catalog. Marketplace availability requires a separate GLPI review and is not automatic.
+The stable source and versioned release are public. Publication in the GLPI plugins catalog is still pending Teclib's review; Marketplace availability requires a separate GLPI review and is not automatic. See [catalog and Marketplace status](docs/MARKETPLACE_SUBMISSION_DRAFT.md).

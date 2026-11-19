@@ -48,6 +48,8 @@ The recovery file does not contain the GLPI database, printer configuration, API
 - GLPI stores normal shipping history fields (destination/contact data) in its own plugin table. Apply the organization's retention and access policies to that data.
 - Back up `/var/lib/zebrashipping` and `GLPI_VAR_DIR/plugins/zebrashipping` together. Restoring an older backup can restore an earlier trial/job state.
 
-## Current limitations
+## Printer compatibility and scope
 
-This repository is an implementation in progress. Run it first in a disposable GLPI environment and a non-production printer. Printer response confirms the job was sent over TCP, not that the label physically printed correctly. Unicode glyph support and exact label fit must be confirmed on each supported Zebra model and font configuration.
+The stable plugin has demonstrated physical printing with a network-connected Zebra ZD421 using 93 × 71 mm media. It is intended for networked Zebra printers and is expected to work with other printers that accept ZPL over raw TCP (normally port 9100). Only the ZD421 has been individually verified; compatibility with other models, DPI values, fonts, and media sizes is not guaranteed until checked on that hardware.
+
+USB printer compatibility is unknown and unsupported. USB printing is outside the network-printing scope and is not planned. See [printer compatibility](PRINTER_COMPATIBILITY.md).

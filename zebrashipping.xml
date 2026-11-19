@@ -2,7 +2,7 @@
 <root>
   <name>GLPI Zebra Shipping</name>
   <key>zebrashipping</key>
-  <state>beta</state>
+  <state>stable</state>
   <logo>https://raw.githubusercontent.com/connectitbg/glpi-zebra-shipping/main/logo.svg</logo>
   <description>
     <short>
@@ -12,14 +12,14 @@
     <long>
       <en><![CDATA[Adds a shipping-label tab to supported GLPI assets and tickets. Configure printers and media dimensions in the plugin, then send labels through the separately installed local Print Service. No printer address is preconfigured in the source.
 
-This is a beta release. The supplied ZD421 test printer has printed successfully with 93 × 71 mm media. The label uses a large centered recipient or company heading and larger address text based on the supplied visual reference. Demo labels retain the `DEMO` mark.
+Printing has been demonstrated with a network-connected Zebra ZD421 using 93 × 71 mm media. The plugin is intended for Zebra printers and is expected to work with other network printers that accept ZPL over raw TCP; other models have not all been individually validated. USB printer compatibility is unknown and unsupported. USB printing is outside the project's network-printing scope and is not planned.
 
 Asset metadata fields are prefilled from GLPI and editable before printing. Administrators can save Professional licenses and export or restore a recovery file containing the license and installation identity. The recovery file does not include GLPI or printer configuration. Demo labels retain the `DEMO` mark.
 
 Demo: 14 days from first installation, up to two enabled printers, and 50 successful print jobs. Professional licenses are verified offline. Source is GPL-2.0-or-later.]]></en>
       <bg><![CDATA[Добавя таб за товарителница към поддържани активи и заявки в GLPI. Администраторът конфигурира принтерите и размера на носителя, след което етикетите се изпращат чрез отделно инсталирана локална Print Service услуга. В изходния код няма предварително зададен адрес на принтер.
 
-Това е бета версия. Тестовият Zebra ZD421 отпечата успешно етикет с носител 93 × 71 mm. Етикетът използва голямо центрирано заглавие за получател или фирма и по-едър адрес според предоставената визуална референция. Полетата с метаданните на актива се попълват от GLPI и могат да се редактират преди печат. Администраторите могат да запазват Professional лицензи и да експортират или възстановяват recovery файл с лиценза и идентификатора на инсталацията. Файлът не съдържа GLPI или принтерната конфигурация. Демо етикетите запазват надписа `DEMO`.
+Печатът е демонстриран с мрежов Zebra ZD421 и етикети 93 × 71 mm. Плъгинът е предназначен за Zebra принтери и се очаква да работи и с други мрежови принтери, които приемат ZPL по raw TCP; останалите модели не са проверени поотделно. Съвместимостта с USB принтери не е известна и не се поддържа. USB печатът е извън обхвата на проекта, насочен към мрежов печат, и не се планира. Етикетът използва голямо центрирано заглавие за получател или фирма и по-едър адрес. Полетата с метаданните на актива се попълват от GLPI и могат да се редактират преди печат. Администраторите могат да запазват Professional лицензи и да експортират или възстановяват recovery файл с лиценза и идентификатора на инсталацията. Файлът не съдържа GLPI или принтерната конфигурация. Демо етикетите запазват надписа `DEMO`.
 
 Демо: 14 дни от първата инсталация, до два активни принтера и 50 успешно изпълнени задания. Professional лицензите се проверяват офлайн. Кодът е GPL-2.0-or-later.]]></bg>
     </long>

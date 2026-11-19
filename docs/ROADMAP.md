@@ -1,45 +1,33 @@
-# Rebuild plan
+# Project status and publication roadmap
 
-## Stage 1 — Foundation complete; hardware validation pending
+## Current status
 
-- [x] Set a stable plugin name and repository structure.
-- [x] Add service token authentication, an empty printer registry, raw TCP output, job metadata, and ZPL input escaping.
-- [x] Add Professional Ed25519 signing/verifying utilities and persistent 14-day first-install state.
-- [x] Validate Python dependencies and GLPI 11.0.9 installation/migration in the supplied test clone.
-- [x] Validate demo limits, printer configuration, mock TCP delivery, idempotency, and failed-job accounting without contacting a physical printer.
-- [x] Verify network connectivity and send one synthetic Cyrillic DEMO label to the supplied ZD421 test printer (identified as 203 dpi).
-- [ ] Visually confirm the physical print's Cyrillic glyphs, fit, and media size.
+GLPI Zebra Shipping **0.2.7 is a stable, working release**. The public source and versioned plugin archive are available under GPL-2.0-or-later.
 
-## Stage 2 — GLPI integration implemented
+- Physical printing has been demonstrated with a networked Zebra ZD421 using 93 × 71 mm labels.
+- GLPI 11.0.9 installation and activation have been verified on test and production instances.
+- The 0.2.7 security review findings were corrected and the plugin was redeployed to both instances.
+- Demo behavior remains 14 days from first installation, up to two enabled printers, 50 successful print jobs, and a visible `DEMO` label mark.
 
-- [x] Implement supported asset and ticket workflows using GLPI 11 APIs.
-- [x] Add printer selection, destination defaults from entity hierarchy, authorization, CSRF-compliant requests, and history.
-- [x] Use GLPI database abstractions for reads/writes; install the plugin and validate its migration on the test clone.
-- [x] Confirm through the supplied administrator screenshots that settings and computer/ticket shipping forms render.
-- [x] Upgrade the test clone from 0.2.1 to 0.2.2 and normalize missing inventory/serial placeholders.
-- [ ] Validate upgrades from every previously released schema.
+See [printer compatibility](PRINTER_COMPATIBILITY.md) for the verified device and current scope.
 
-## Stage 3 — Commercial readiness
+## Printer compatibility
 
-- Confirm code/dependency ownership and commercial distribution rights.
-- Keep the license signing key in a private operator environment.
-- [x] Add basic license administration, professional activation, demo restrictions, and trial persistence.
-- [x] Document offline signing-key operations, licensing, installation, and secret handling.
-- [x] Select GPL-2.0-or-later for public source and a one-time Professional activation model for the official build.
-- [ ] Finalize transfer/reissue policy and test upgrade behavior across all release schemas.
-- [ ] Publish the repository publicly and create/submit catalog XML metadata.
-- [ ] Set the one-time price, refund terms, transfer/reissue policy, and support commitment before taking payment.
-- [ ] Confirm GLPI developer/partner eligibility for Marketplace review.
-- [ ] Review dependency ownership and commercial distribution rights.
-- [x] Build a clean versioned plugin archive (0.2.2) and Print Service archive (0.2.0).
+- **Verified:** Zebra ZD421 over raw TCP, with 93 × 71 mm media.
+- **Expected:** other networked Zebra printers and other network printers that accept ZPL over raw TCP. Each model has not been separately tested.
+- **USB:** compatibility is unknown and unsupported. USB printing is outside the project's network-printing scope and is not planned.
 
-## Stage 4 — Validation and publication
+## Remaining GLPI publication steps
 
-- [x] Verify installation on the supplied GLPI 11.0.9 test clone using a local mock TCP receiver; no physical print was sent.
-- [x] Verify a real ZD421 test printer over raw TCP with a synthetic label; GLPI reports the job as sent.
-- [ ] Confirm the printed label visually; a successful TCP send alone does not confirm print quality.
-- Review security, GLPI coding standards, privacy/logging, backup/restore, and migration paths.
-- Publish source/archive according to the chosen commercial model.
-- Submit the plugin catalog entry; request separate Marketplace review from GLPI.
+- Resolve the `UNAVAILABLE_NAME` response from the latest catalog submission and obtain acceptance of the XML listing.
+- Confirm publisher eligibility for GLPI Marketplace review. GLPI's current guidance says the plugin must be developed by Teclib' or an official partner trained in GLPI plugin development.
+- Provide sanitized screenshots and confirm the catalog metadata/logo meet the submission requirements.
+- Complete independent review of GLPI coding standards, dependencies/licenses, supported-version upgrades, and privacy/logging; document a maintenance and support commitment.
+- Once listed in the plugins catalog, request separate Marketplace review from GLPI at `glpi@teclib.com`.
+- Decide the Professional price, payment, refund, and license transfer/reissue terms before taking payment.
 
-No production configuration was changed. The workspace does not contain the production source or production database; the supplied test clone contains cloned deployment state and was used only for installation/migration and mock-printer validation.
+Catalog listing and Marketplace approval are separate decisions; neither is guaranteed by a stable release or successful hardware test.
+
+## Deployment
+
+The plugin is deployed as version 0.2.7 on the owner's production GLPI and the GLPI 11.0.9 test instance. The Print Service remains a separate local component. No printer address, customer database, service token, or signing key is part of the public source or plugin archive.

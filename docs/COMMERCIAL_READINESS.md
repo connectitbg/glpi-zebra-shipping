@@ -20,10 +20,16 @@ References: [GLPI plugin catalog and Marketplace tutorial](https://glpi-develope
 - Public support contact and maintenance commitment.
 - Confirm GLPI developer/partner eligibility for Marketplace review.
 
-## Technical release checks still open
+## Stable release and remaining publication work
 
-- Physically confirm the revised large-font recipient/address layout on the ZD421 at 93 × 71 mm; demo labels must keep the `DEMO` mark.
-- Complete security, dependency-license, GLPI coding-standard, privacy/logging, backup/restore, and upgrade reviews.
-- Publish the Git repository publicly; prepare the catalog XML, sanitized logo and screenshots, and a versioned public plugin archive.
-- Submit to the GLPI plugin catalog; after acceptance, request separate Marketplace review.
-- The 0.2.2 plugin and 0.2.0 Print Service are test builds, not a production release or Marketplace submission.
+Version 0.2.7 is the stable, working release. Physical printing has been demonstrated on a network-connected Zebra ZD421 with 93 × 71 mm media. Other ZPL models are expected to work over raw TCP but have not all been individually verified. USB printing is unsupported, outside project scope, and is not planned.
+
+- The public Git repository, GPL-2.0-or-later source, stable release archive, and catalog XML are available.
+- The 0.2.7 security review findings were addressed, and the build is installed on GLPI 11.0.9 test and production instances.
+- Resolve the catalog form's `UNAVAILABLE_NAME` response and obtain catalog acceptance.
+- Confirm the publisher meets GLPI's authorship/developer eligibility requirement for Marketplace review.
+- Prepare sanitized screenshots and confirm the XML logo and metadata satisfy catalog requirements.
+- Finish independent GLPI coding-standard, dependency-license, compatibility/upgrade, and privacy/logging reviews; document the support and maintenance commitment.
+- After catalog acceptance, request separate Marketplace review from GLPI. Approval remains at GLPI's discretion.
+
+The one-time price, payment process, refund terms, license transfer/reissue policy, and public support contact remain to be decided before taking payment.
