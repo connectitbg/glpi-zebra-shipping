@@ -11,6 +11,7 @@ import re
 import socket
 import sqlite3
 import tempfile
+import textwrap
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -21,7 +22,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.2.1"
 DEMO_DAYS = 14
 DEMO_PRINT_LIMIT = 50
 DEMO_PRINTER_LIMIT = 2
@@ -240,40 +241,76 @@ def _clean_zpl_text(value: str) -> str:
     return re.sub(r"[\^~\r\n\x00-\x1f]", " ", value).strip()[:180]
 
 
+def _wrap_label_text(value: str, width: int, font_size: int, max_lines: int) -> list[str]:
+    # The selected Zebra font is proportional; use a conservative character
+    # width estimate so long Cyrillic names and addresses wrap before the edge.
+    chars_per_line = max(1, int(width / max(1, font_size * 0.72)))
+    lines = textwrap.wrap(value, width=chars_per_line, break_long_words=True,
+                          break_on_hyphens=False) if value else []
+    if len(lines) > max_lines:
+        raise HTTPException(422, "Label content does not fit; shorten recipient or address")
+    return lines
+
+
 def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
     dpi = float(printer["dpi"])
     scale = dpi / 203.0
     margin = max(4, round(20 * scale))
     width = round(float(printer["width_mm"]) * dpi / 25.4)
     height = round(float(printer["height_mm"]) * dpi / 25.4)
-    fields = [
-        ("ГРАД", label.get("city", ""), 32),
-        ("ПОЛУЧАТЕЛ", label.get("recipient", ""), 22),
-        ("АДРЕС", label.get("address", ""), 32),
-        ("ТЕЛЕФОН", label.get("phone", ""), 20),
-        ("АКТИВ", label.get("asset_name", ""), 22),
-        ("ТИП", label.get("asset_type", ""), 20),
-        ("ИНВ. №", label.get("inventory_number", ""), 32),
-        ("СЕРИЕН №", label.get("serial_number", ""), 32),
-        ("БЕЛЕЖКИ", label.get("notes", ""), 18),
-    ]
+    content_width = width - margin * 2
     y = margin
     commands = ["^XA", f"^PW{width}", f"^LL{height}", "^CI28", "^CWX,E:TT0003M_.FNT^FS"]
     if demo:
         watermark_size = max(12, round(20 * scale))
         commands.append(f"^FO{max(4, width - round(110 * scale))},{round(12 * scale)}^AXN,{watermark_size},{watermark_size}^FDDEMO^FS")
-    for title, value, size in fields:
-        value = _clean_zpl_text(value)
-        if not value:
-            continue
-        size = max(12, round(size * scale))
-        block_height = max(size + round(10 * scale), size * 2 + round(8 * scale))
-        if y + block_height > height - 12:
-            raise HTTPException(422, "Label content does not fit; shorten notes or optional fields")
+
+    header_size = max(12, round(18 * scale))
+    commands.append(
+        f"^FO{margin},{y}^AXN,{header_size},{header_size}^FB{content_width},1,0,L,0^FDИЗПРАЩАНЕ НА ТЕХНИКА^FS"
+    )
+    y += header_size + round(8 * scale)
+
+    recipient = _clean_zpl_text(label.get("recipient", "")).upper()
+    recipient_size = max(24, round(52 * scale))
+    recipient_lines = _wrap_label_text(recipient, content_width, recipient_size, max_lines=2)
+    for line in recipient_lines:
         commands.append(
-            f"^FO{margin},{y}^AXN,{size},{size}^FB{width - margin * 2},2,4,L,0^FD{_clean_zpl_text(title)}: {value}^FS"
+            f"^FO{margin},{y}^AXN,{recipient_size},{recipient_size}^FB{content_width},1,0,C,0^FD{line}^FS"
         )
-        y += block_height
+        y += recipient_size + round(4 * scale)
+
+    y += round(5 * scale)
+    commands.append(f"^FO{margin},{y}^GB{content_width},2,2^FS")
+    y += round(14 * scale)
+
+    address = _clean_zpl_text(label.get("address", ""))
+    city = _clean_zpl_text(label.get("city", ""))
+    if city and city.casefold() not in address.casefold():
+        address = f"{address}, {city}" if address else city
+    address_text = f"Адрес: {address}" if address else ""
+    address_size = max(18, round(34 * scale))
+    for line in _wrap_label_text(address_text, content_width, address_size, max_lines=3):
+        commands.append(
+            f"^FO{margin},{y}^AXN,{address_size},{address_size}^FB{content_width},1,0,L,0^FD{line}^FS"
+        )
+        y += address_size + round(4 * scale)
+
+    y += round(5 * scale)
+    commands.append(f"^FO{margin},{y}^GB{content_width},2,2^FS")
+    y += round(12 * scale)
+
+    phone = _clean_zpl_text(label.get("phone", ""))
+    if phone:
+        phone_size = max(14, round(22 * scale))
+        for line in _wrap_label_text(f"Телефон: {phone}", content_width, phone_size, max_lines=2):
+            commands.append(
+                f"^FO{margin},{y}^AXN,{phone_size},{phone_size}^FB{content_width},1,0,L,0^FD{line}^FS"
+            )
+            y += phone_size + round(3 * scale)
+
+    if y > height - margin:
+        raise HTTPException(422, "Label content does not fit; shorten recipient or address")
     commands.append("^XZ")
     return "\n".join(commands).encode("utf-8")
 

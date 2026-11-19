@@ -1,18 +1,19 @@
 # GLPI catalog and Marketplace submission draft
 
-This is a preparation document only. It is not a submission. The repository is not public yet.
+This document tracks the beta catalog listing and its Marketplace follow-up.
 
 ## Draft catalog details
 
 - Display name: GLPI Zebra Shipping
 - Technical key: `zebrashipping`
-- Current plugin version: `0.2.2` (test build; not a release candidate)
+- Publisher: `Connect IT`
+- Current plugin version: `0.2.3` (beta; revised physical layout still needs a test print)
 - GLPI compatibility tested: GLPI `11.0.9`; declared minimum: `11.0`
-- Plugin source: <https://github.com/connectitbg/glpi-zebra-shipping> (private; not catalog-ready)
+- Plugin source: <https://github.com/connectitbg/glpi-zebra-shipping>
 - License: GPL-2.0-or-later; one-time Professional sale is for the official build and does not remove GPL rights.
 - Publisher/support contact: public GitHub issues can be used initially; a monitored support address and maintenance commitment still need to be selected.
 - Logo and public screenshots: not prepared. Existing test screenshots contain environment and asset details and must not be published as-is.
-- Download URL: not available. The current ZIP is a local test artifact and is not a public, versioned release.
+- Download URL: <https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.3/glpi-zebrashipping-plugin-0.2.3.zip>
 
 ## Proposed short description
 
@@ -24,7 +25,7 @@ GLPI Zebra Shipping adds a shipping-label tab to supported GLPI assets and ticke
 
 The demo is limited to 14 days from first installation, two enabled printers, and 50 successful print jobs. A one-time Professional purchase is planned for perpetual use of the official release within major version 1.x. Licensing is verified offline and does not require a license server. The source is GPL-2.0-or-later, so users retain the right to modify and redistribute the code under the GPL.
 
-The current build has been installed on a GLPI 11.0.9 test clone. A physical ZD421 test print was sent, but visual review of the printed label, dimensions, Cyrillic text, and clipping is still pending. This build must not be described as production-ready until the remaining compatibility, security, upgrade, and licensing reviews are completed.
+The beta has been installed on a GLPI 11.0.9 test clone. A physical ZD421 print succeeded after setting the media to 93 × 71 mm. The revised large-font layout must be printed and visually reviewed before this build is described as production-ready; the `DEMO` mark remains visible during the demo period.
 
 ## Remaining publication gates
 

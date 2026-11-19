@@ -1,6 +1,11 @@
 {
   "name": "glpi-zebra/shipping-plugin",
   "description": "Shipping labels for GLPI using Zebra network printers",
+  "authors": [
+    {
+      "name": "Connect IT"
+    }
+  ],
   "type": "glpi-plugin",
   "license": "GPL-2.0-or-later",
   "autoload": {

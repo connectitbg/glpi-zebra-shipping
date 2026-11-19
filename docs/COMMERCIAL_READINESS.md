@@ -22,7 +22,7 @@ References: [GLPI plugin catalog and Marketplace tutorial](https://glpi-develope
 
 ## Technical release checks still open
 
-- Review the physical ZD421 label, media dimensions, Cyrillic rendering, and clipping; patch if needed.
+- Physically confirm the revised large-font recipient/address layout on the ZD421 at 93 × 71 mm; demo labels must keep the `DEMO` mark.
 - Complete security, dependency-license, GLPI coding-standard, privacy/logging, backup/restore, and upgrade reviews.
 - Publish the Git repository publicly; prepare the catalog XML, sanitized logo and screenshots, and a versioned public plugin archive.
 - Submit to the GLPI plugin catalog; after acceptance, request separate Marketplace review.

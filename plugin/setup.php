@@ -2,7 +2,7 @@
 
 use GlpiPlugin\Zebrashipping\ShippingTab;
 
-define('PLUGIN_ZEBRASHIPPING_VERSION', '0.2.2');
+define('PLUGIN_ZEBRASHIPPING_VERSION', '0.2.3');
 
 require_once __DIR__ . '/src/autoload.php';
 
@@ -16,7 +16,7 @@ function plugin_version_zebrashipping(): array
     return [
         'name'         => 'GLPI Zebra Shipping',
         'version'      => PLUGIN_ZEBRASHIPPING_VERSION,
-        'author'       => 'GLPI Zebra Shipping',
+        'author'       => 'Connect IT',
         'license'      => 'GPL-2.0-or-later',
         'requirements' => [
             'glpi' => ['min' => '11.0'],

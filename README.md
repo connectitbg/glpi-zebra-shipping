@@ -2,7 +2,9 @@
 
 Open-source shipping-label printing from GLPI 11 to administrator-configured Zebra network printers.
 
-The current `0.2.2` build is a test build. A ZD421 received a synthetic label, but its physical layout, Cyrillic rendering, and media fit have not yet been visually checked. Do not use this build for production shipments.
+**Publisher:** Connect IT
+
+The current `0.2.3` build is a beta. The ZD421 test label uses 93 × 71 mm media and a larger recipient/address layout modeled on the provided reference. The new typography still needs a physical confirmation on the test printer. Demo labels keep the `DEMO` mark. Do not use this build for production shipments.
 
 ## Product decisions
 

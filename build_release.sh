@@ -2,9 +2,9 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-DIST=$ROOT/dist
-PLUGIN_VERSION=0.2.2
-SERVICE_VERSION=0.2.0
+DIST=$ROOT/dist/release-0.2.3
+PLUGIN_VERSION=0.2.3
+SERVICE_VERSION=0.2.1
 
 if [ -e "$DIST" ]; then
     echo "Refusing to overwrite existing dist directory: $DIST" >&2
