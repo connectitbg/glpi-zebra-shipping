@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
-APP_VERSION = "0.2.1"
+APP_VERSION = "0.2.2"
 DEMO_DAYS = 14
 DEMO_PRINT_LIMIT = 50
 DEMO_PRINTER_LIMIT = 2
@@ -244,7 +244,7 @@ def _clean_zpl_text(value: str) -> str:
 def _wrap_label_text(value: str, width: int, font_size: int, max_lines: int) -> list[str]:
     # The selected Zebra font is proportional; use a conservative character
     # width estimate so long Cyrillic names and addresses wrap before the edge.
-    chars_per_line = max(1, int(width / max(1, font_size * 0.72)))
+    chars_per_line = max(1, int(width / max(1, font_size * 0.56)))
     lines = textwrap.wrap(value, width=chars_per_line, break_long_words=True,
                           break_on_hyphens=False) if value else []
     if len(lines) > max_lines:
@@ -265,14 +265,16 @@ def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
         watermark_size = max(12, round(20 * scale))
         commands.append(f"^FO{max(4, width - round(110 * scale))},{round(12 * scale)}^AXN,{watermark_size},{watermark_size}^FDDEMO^FS")
 
-    header_size = max(12, round(18 * scale))
+    header_size = max(16, round(28 * scale))
     commands.append(
         f"^FO{margin},{y}^AXN,{header_size},{header_size}^FB{content_width},1,0,L,0^FDИЗПРАЩАНЕ НА ТЕХНИКА^FS"
     )
     y += header_size + round(8 * scale)
 
-    recipient = _clean_zpl_text(label.get("recipient", "")).upper()
-    recipient_size = max(24, round(52 * scale))
+    contact = _clean_zpl_text(label.get("recipient", ""))
+    city = _clean_zpl_text(label.get("city", ""))
+    recipient = (contact or city).upper()
+    recipient_size = max(32, round(76 * scale))
     recipient_lines = _wrap_label_text(recipient, content_width, recipient_size, max_lines=2)
     for line in recipient_lines:
         commands.append(
@@ -285,11 +287,10 @@ def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
     y += round(14 * scale)
 
     address = _clean_zpl_text(label.get("address", ""))
-    city = _clean_zpl_text(label.get("city", ""))
-    if city and city.casefold() not in address.casefold():
+    if contact and city and city.casefold() not in address.casefold():
         address = f"{address}, {city}" if address else city
     address_text = f"Адрес: {address}" if address else ""
-    address_size = max(18, round(34 * scale))
+    address_size = max(24, round(48 * scale))
     for line in _wrap_label_text(address_text, content_width, address_size, max_lines=3):
         commands.append(
             f"^FO{margin},{y}^AXN,{address_size},{address_size}^FB{content_width},1,0,L,0^FD{line}^FS"
@@ -302,7 +303,7 @@ def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
 
     phone = _clean_zpl_text(label.get("phone", ""))
     if phone:
-        phone_size = max(14, round(22 * scale))
+        phone_size = max(16, round(26 * scale))
         for line in _wrap_label_text(f"Телефон: {phone}", content_width, phone_size, max_lines=2):
             commands.append(
                 f"^FO{margin},{y}^AXN,{phone_size},{phone_size}^FB{content_width},1,0,L,0^FD{line}^FS"

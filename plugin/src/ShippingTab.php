@@ -64,7 +64,8 @@ final class ShippingTab extends \CommonDBTM
             echo '<input type="hidden" name="itemtype" value="' . zebrashipping_escape($itemtype) . '">';
             echo '<input type="hidden" name="items_id" value="' . $itemsId . '">';
             echo '<input type="hidden" name="request_id" value="' . bin2hex(random_bytes(16)) . '">';
-            self::textField('destination_city', __('City', 'zebrashipping'), $defaults['city']);
+            self::textField('destination_city', __('City / company', 'zebrashipping'), $defaults['city']);
+            echo '<small class="form-text text-muted">' . zebrashipping_escape(__('Used as the large label heading when Recipient / office is blank.', 'zebrashipping')) . '</small>';
             self::textField('recipient', __('Recipient / office', 'zebrashipping'), '');
             self::textField('address', __('Address', 'zebrashipping'), $defaults['address']);
             self::textField('phone', __('Phone', 'zebrashipping'), '');

@@ -2,7 +2,7 @@
 
 use GlpiPlugin\Zebrashipping\ShippingTab;
 
-define('PLUGIN_ZEBRASHIPPING_VERSION', '0.2.3');
+define('PLUGIN_ZEBRASHIPPING_VERSION', '0.2.4');
 
 require_once __DIR__ . '/src/autoload.php';
 
