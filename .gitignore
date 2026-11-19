@@ -12,6 +12,7 @@
 *.lic
 *.jsonl
 *.bak
+licensing/private-keys/
 __pycache__/
 .venv/
 vendor/
