@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
-APP_VERSION = "0.2.2"
+APP_VERSION = "0.2.3"
 DEMO_DAYS = 14
 DEMO_PRINT_LIMIT = 50
 DEMO_PRINTER_LIMIT = 2
@@ -248,7 +248,7 @@ def _wrap_label_text(value: str, width: int, font_size: int, max_lines: int) -> 
     lines = textwrap.wrap(value, width=chars_per_line, break_long_words=True,
                           break_on_hyphens=False) if value else []
     if len(lines) > max_lines:
-        raise HTTPException(422, "Label content does not fit; shorten recipient or address")
+        raise HTTPException(422, "Label content does not fit; shorten recipient, address, or asset metadata")
     return lines
 
 
@@ -301,17 +301,54 @@ def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
     commands.append(f"^FO{margin},{y}^GB{content_width},2,2^FS")
     y += round(12 * scale)
 
+    metadata_fields = [
+        ("Актив", _clean_zpl_text(label.get("asset_name", "")) or "N/A"),
+        ("Тип", _clean_zpl_text(label.get("asset_type", "")) or "N/A"),
+        ("Инв. №", _clean_zpl_text(label.get("inventory_number", "")) or "N/A"),
+        ("Сериен №", _clean_zpl_text(label.get("serial_number", "")) or "N/A"),
+    ]
     phone = _clean_zpl_text(label.get("phone", ""))
+    phone_size = max(16, round(26 * scale))
+    phone_lines = _wrap_label_text(f"Телефон: {phone}", content_width, phone_size, max_lines=2) if phone else []
+
+    metadata_size = max(18, round(30 * scale))
+    minimum_metadata_size = max(14, round(18 * scale))
+    metadata_gap = max(2, round(3 * scale))
+    metadata_lines: list[str] = []
+    while metadata_size >= minimum_metadata_size:
+        candidate_lines = []
+        try:
+            for caption, value in metadata_fields:
+                candidate_lines.extend(
+                    _wrap_label_text(f"{caption}: {value}", content_width, metadata_size, max_lines=2)
+                )
+        except HTTPException:
+            candidate_lines = []
+        candidate_height = len(candidate_lines) * (metadata_size + metadata_gap)
+        phone_height = len(phone_lines) * (phone_size + round(3 * scale))
+        if candidate_lines and y + candidate_height + phone_height <= height - margin:
+            metadata_lines = candidate_lines
+            break
+        metadata_size -= 2
+
+    if not metadata_lines:
+        raise HTTPException(422, "Label content does not fit; shorten recipient, address, or asset metadata")
+
+    for line in metadata_lines:
+        commands.append(
+            f"^FO{margin},{y}^AXN,{metadata_size},{metadata_size}^FB{content_width},1,0,L,0^FD{line}^FS"
+        )
+        y += metadata_size + metadata_gap
+
     if phone:
-        phone_size = max(16, round(26 * scale))
-        for line in _wrap_label_text(f"Телефон: {phone}", content_width, phone_size, max_lines=2):
+        for line in phone_lines:
             commands.append(
                 f"^FO{margin},{y}^AXN,{phone_size},{phone_size}^FB{content_width},1,0,L,0^FD{line}^FS"
             )
             y += phone_size + round(3 * scale)
 
     if y > height - margin:
-        raise HTTPException(422, "Label content does not fit; shorten recipient or address")
+        raise HTTPException(422, "Label content does not fit; shorten recipient, address, or asset metadata")
     commands.append("^XZ")
     return "\n".join(commands).encode("utf-8")
 
