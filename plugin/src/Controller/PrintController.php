@@ -111,15 +111,15 @@ final class PrintController extends AbstractController
                 'label' => $label,
             ]);
             $DB->update('glpi_plugin_zebrashipping_jobs', [
-                'id' => $jobRowId, 'service_job_id' => $job['id'] ?? null, 'status' => $job['status'] ?? 'sent',
+                'service_job_id' => $job['id'] ?? null, 'status' => $job['status'] ?? 'sent',
                 'response_text' => null,
-            ]);
+            ], ['id' => $jobRowId]);
             Session::addMessageAfterRedirect(__('Print job sent to the printer.', 'zebrashipping'), true, INFO);
         } catch (\Throwable $error) {
             $safeMessage = mb_substr($error->getMessage(), 0, 400);
             $DB->update('glpi_plugin_zebrashipping_jobs', [
-                'id' => $jobRowId, 'status' => 'failed', 'response_text' => $safeMessage,
-            ]);
+                'status' => 'failed', 'response_text' => $safeMessage,
+            ], ['id' => $jobRowId]);
             Session::addMessageAfterRedirect(__('Printing failed: ', 'zebrashipping') . $safeMessage, false, ERROR);
         }
 
