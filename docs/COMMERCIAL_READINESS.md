@@ -5,7 +5,7 @@
 - Public source under GPL-2.0-or-later; community contributions and forks may be published under the same terms.
 - One-time sale planned for the official Professional activation. The existing product design makes the license perpetual within major version 1.x, bound to a GLPI installation, and verified offline without a license server.
 - The fee does not remove recipients' GPL rights. Users can modify and redistribute the source; the Professional gate applies to the unmodified official build and is not guaranteed DRM against forks.
-- No signing key has been generated. Generate it once in an owner-controlled offline environment after product identity and final license terms are agreed. Keep the private key encrypted and backed up outside Git, GLPI, and customer packages.
+- Signing-key readiness has not been confirmed. Before taking payment, verify the owner's encrypted offline Ed25519 key and tested backup, and ensure the matching public key is configured in the production Print Service. If no key exists, generate it in an owner-controlled offline environment. Keep the private key outside Git, GLPI, and customer packages.
 
 ## GLPI publication path
 
@@ -33,3 +33,5 @@ Version 0.2.7 is the stable, working release. Physical printing has been demonst
 - After catalog acceptance, request separate Marketplace review from GLPI. Approval remains at GLPI's discretion.
 
 The one-time price, payment process, refund terms, license transfer/reissue policy, and public support contact remain to be decided before taking payment.
+
+See the [monetization runbook](MONETIZATION_RUNBOOK.md) for the manual order-to-license workflow and the required go-live checks.

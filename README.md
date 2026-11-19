@@ -31,7 +31,7 @@ See [installation and configuration](docs/INSTALLATION.md). The GLPI plugin and 
 
 GLPI Zebra Shipping is licensed under GPL-2.0-or-later. The planned Professional option is a one-time purchase for perpetual use of the official major version 1.x release, verified offline. GPL recipients keep the right to modify and redistribute source under the GPL; a Professional key cannot restrict modified forks.
 
-The one-time price, refund/transfer policy, and public support commitment remain open. See [commercial readiness](docs/COMMERCIAL_READINESS.md).
+The one-time price, refund/transfer policy, signing-key readiness, payment process, and public support commitment remain open. See [commercial readiness](docs/COMMERCIAL_READINESS.md) and the [monetization runbook](docs/MONETIZATION_RUNBOOK.md).
 
 ## Development status
 
