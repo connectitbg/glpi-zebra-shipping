@@ -3,12 +3,9 @@
 namespace GlpiPlugin\Zebrashipping;
 
 use CommonGLPI;
-use Html;
 use Session;
-use Config as GlpiConfig;
-use Plugin;
 
-final class ShippingTab extends \CommonDBTM
+final class ShippingTab extends \CommonGLPI
 {
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
@@ -20,15 +17,13 @@ final class ShippingTab extends \CommonDBTM
 
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
-        if (!$item->getID() || !method_exists($item, 'canUpdate') || !$item->canUpdate()) {
-            Html::displayNotFoundError();
-            return false;
+        if (!$item->getID() || !$item->can($item->getID(), UPDATE)) {
+            throw new \Glpi\Exception\Http\NotFoundHttpException();
         }
 
         global $DB;
         $defaults = EntityDefaults::forItem($item);
-        $config = GlpiConfig::getConfigurationValues('plugin:zebrashipping');
-        $license = $config['license_file'] ?? null;
+        $license = LicenseStorage::get();
         $service = null;
         $message = '';
         try {
@@ -64,11 +59,11 @@ final class ShippingTab extends \CommonDBTM
             echo '<input type="hidden" name="itemtype" value="' . zebrashipping_escape($itemtype) . '">';
             echo '<input type="hidden" name="items_id" value="' . $itemsId . '">';
             echo '<input type="hidden" name="request_id" value="' . bin2hex(random_bytes(16)) . '">';
-            self::textField('destination_city', __('City / company', 'zebrashipping'), $defaults['city']);
+            self::textField('destination_city', __('City / company', 'zebrashipping'), $defaults['city'], 150);
             echo '<small class="form-text text-muted">' . zebrashipping_escape(__('Used as the large label heading when Recipient / office is blank.', 'zebrashipping')) . '</small>';
-            self::textField('recipient', __('Recipient / office', 'zebrashipping'), '');
+            self::textField('recipient', __('Recipient / office', 'zebrashipping'), '', 255);
             self::textField('address', __('Address', 'zebrashipping'), $defaults['address']);
-            self::textField('phone', __('Phone', 'zebrashipping'), '');
+            self::textField('phone', __('Phone', 'zebrashipping'), '', 80);
             self::textField('asset_name', __('Asset name', 'zebrashipping'), $assetName);
             self::textField('asset_type', __('Asset type', 'zebrashipping'), $assetType);
             self::textField('inventory_number', __('Inventory number', 'zebrashipping'), $inventory);
@@ -105,11 +100,11 @@ final class ShippingTab extends \CommonDBTM
         return true;
     }
 
-    private static function textField(string $name, string $label, string $value): void
+    private static function textField(string $name, string $label, string $value, int $maxLength = 500): void
     {
         echo '<div class="mb-3"><label for="zs_' . zebrashipping_escape($name) . '">' . zebrashipping_escape($label) . '</label>';
         echo '<input class="form-control" id="zs_' . zebrashipping_escape($name) . '" name="' . zebrashipping_escape($name)
-            . '" value="' . zebrashipping_escape($value) . '" maxlength="500"></div>';
+            . '" value="' . zebrashipping_escape($value) . '" maxlength="' . $maxLength . '"></div>';
     }
 
     private function isSupported(CommonGLPI $item): bool

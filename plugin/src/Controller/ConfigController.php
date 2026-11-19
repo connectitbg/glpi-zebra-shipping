@@ -4,6 +4,7 @@ namespace GlpiPlugin\Zebrashipping\Controller;
 
 use Glpi\Controller\AbstractController;
 use GlpiPlugin\Zebrashipping\InstallationState;
+use GlpiPlugin\Zebrashipping\LicenseStorage;
 use GlpiPlugin\Zebrashipping\ServiceClient;
 use Session;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,8 +19,7 @@ final class ConfigController extends AbstractController
         Session::checkRight('config', UPDATE);
 
         $messages = [];
-        $settings = \Config::getConfigurationValues('plugin:zebrashipping');
-        $license = (string) ($settings['license_file'] ?? '');
+        $license = LicenseStorage::get();
         $installState = InstallationState::get();
         $service = null;
 
@@ -36,7 +36,8 @@ final class ConfigController extends AbstractController
             $service = new ServiceClient();
             if ($request->isMethod('POST')) {
                 if ($request->request->has('save_license')) {
-                    $license = trim($request->request->getString('license_file'));
+                    $submittedLicense = trim($request->request->getString('license_file'));
+                    $license = $submittedLicense === '' ? $license : $submittedLicense;
                     if (mb_strlen($license) > 8192) {
                         throw new \InvalidArgumentException(__('License text is too long.', 'zebrashipping'));
                     }
@@ -46,9 +47,12 @@ final class ConfigController extends AbstractController
                             throw new \RuntimeException(__('The supplied license could not be validated.', 'zebrashipping'));
                         }
                     }
-                    \Config::setConfigurationValues('plugin:zebrashipping', ['license_file' => $license]);
-                    $settings['license_file'] = $license;
+                    LicenseStorage::store($license);
                     $messages[] = __('License saved.', 'zebrashipping');
+                } elseif ($request->request->has('clear_license')) {
+                    LicenseStorage::store('');
+                    $license = '';
+                    $messages[] = __('License removed.', 'zebrashipping');
                 } elseif ($request->request->has('restore_recovery')) {
                     $rawBackup = trim($request->request->getString('recovery_backup'));
                     if ($rawBackup === '' || strlen($rawBackup) > 16384) {
@@ -70,10 +74,9 @@ final class ConfigController extends AbstractController
                         throw new \RuntimeException(__('The recovery backup license or demo period is not valid.', 'zebrashipping'));
                     }
                     InstallationState::restore($restoredState);
-                    \Config::setConfigurationValues('plugin:zebrashipping', ['license_file' => $restoredLicense]);
+                    LicenseStorage::store($restoredLicense);
                     $installState = $restoredState;
                     $license = $restoredLicense;
-                    $settings['license_file'] = $license;
                     $messages[] = __('Recovery backup restored. Save a new backup after changing your license.', 'zebrashipping');
                 } elseif ($request->request->has('check_printer')) {
                     $result = $service->checkPrinter($request->request->getString('printer_id'));
@@ -100,8 +103,8 @@ final class ConfigController extends AbstractController
                             'host' => mb_substr($host, 0, 253),
                             'port' => max(1, min(65535, $request->request->getInt('port', 9100))),
                             'dpi' => max(152, min(600, $request->request->getInt('dpi', 203))),
-                            'width_mm' => max(20, min(300, $request->request->get('width_mm', 93))),
-                            'height_mm' => max(20, min(300, $request->request->get('height_mm', 71))),
+                            'width_mm' => self::requestInt($request, 'width_mm', 93, 20, 300),
+                            'height_mm' => self::requestInt($request, 'height_mm', 71, 20, 300),
                             'enabled' => $request->request->has('enabled'),
                             'description' => mb_substr(trim($request->request->getString('description')), 0, 250),
                         ];
@@ -176,9 +179,12 @@ final class ConfigController extends AbstractController
         echo '<h3>' . self::escape(__('Professional license', 'zebrashipping')) . '</h3>';
         echo '<form method="post" action="' . self::escape($configUrl) . '">';
         self::csrfField();
-        echo '<textarea class="form-control" name="license_file" rows="3" autocomplete="off" spellcheck="false">'
-            . self::escape($license) . '</textarea><button class="btn btn-primary mt-2" name="save_license" value="1">'
-            . self::escape(__('Save license', 'zebrashipping')) . '</button></form>';
+        echo '<input class="form-control" type="password" name="license_file" maxlength="8192" autocomplete="new-password" spellcheck="false" placeholder="'
+            . self::escape($license !== '' ? __('License is saved; leave blank to keep it.', 'zebrashipping') : __('Paste license key', 'zebrashipping'))
+            . '"><button class="btn btn-primary mt-2" name="save_license" value="1">'
+            . self::escape(__('Save license', 'zebrashipping')) . '</button> '
+            . '<button class="btn btn-outline-danger mt-2" name="clear_license" value="1">'
+            . self::escape(__('Remove license', 'zebrashipping')) . '</button></form>';
         echo '<h3 class="mt-4">' . self::escape(__('License and recovery backup', 'zebrashipping')) . '</h3>';
         echo '<p>' . self::escape(__('Download this recovery file and keep it in a secure location. It contains the license and installation identity, but not your GLPI database or signing key.', 'zebrashipping')) . '</p>';
         echo '<p><a class="btn btn-outline-primary" href="' . self::escape($configUrl . '?download_recovery=1') . '">'
@@ -186,9 +192,9 @@ final class ConfigController extends AbstractController
         echo '<form method="post" action="' . self::escape($configUrl) . '">';
         self::csrfField();
         echo '<label for="zs_recovery_backup">' . self::escape(__('Recovery backup JSON', 'zebrashipping')) . '</label>';
-        echo '<textarea class="form-control font-monospace" id="zs_recovery_backup" name="recovery_backup" rows="8" maxlength="16384" spellcheck="false">'
-            . self::escape(json_encode(self::recoveryPayload($installState, $license), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
-            . '</textarea><button class="btn btn-outline-secondary mt-2" name="restore_recovery" value="1">'
+        echo '<textarea class="form-control font-monospace" id="zs_recovery_backup" name="recovery_backup" rows="8" maxlength="16384" spellcheck="false" placeholder="'
+            . self::escape(__('Paste the contents of a previously downloaded recovery backup.', 'zebrashipping'))
+            . '"></textarea><button class="btn btn-outline-secondary mt-2" name="restore_recovery" value="1">'
             . self::escape(__('Restore from recovery backup', 'zebrashipping')) . '</button></form>';
         echo '<p class="text-muted mt-3">' . self::escape(__('The service URL and API token are configured by the server administrator in the environment; they are never stored here or shown in this page.', 'zebrashipping')) . '</p>';
         echo '</div>';
@@ -214,6 +220,19 @@ final class ConfigController extends AbstractController
     private static function csrfField(): void
     {
         echo '<input type="hidden" name="_glpi_csrf_token" value="' . self::escape(Session::getNewCSRFToken()) . '">';
+    }
+
+    private static function requestInt(Request $request, string $field, int $default, int $min, int $max): int
+    {
+        $raw = $request->request->getString($field, (string) $default);
+        if (!preg_match('/^\d{1,4}$/', $raw)) {
+            throw new \InvalidArgumentException(__('Printer dimensions must be whole numbers.', 'zebrashipping'));
+        }
+        $value = (int) $raw;
+        if ($value < $min || $value > $max) {
+            throw new \InvalidArgumentException(__('Printer dimensions are outside the supported range.', 'zebrashipping'));
+        }
+        return $value;
     }
 
     private static function recoveryPayload(array $installation, string $license): array

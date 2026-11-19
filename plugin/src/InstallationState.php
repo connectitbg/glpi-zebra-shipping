@@ -108,4 +108,17 @@ final class InstallationState
             fclose($handle);
         }
     }
+
+    /** Remove persisted installation identity when the plugin is uninstalled. */
+    public static function delete(): void
+    {
+        $path = self::path();
+        if (is_file($path) && !unlink($path)) {
+            throw new \RuntimeException('Cannot remove plugin installation state');
+        }
+        $directory = dirname($path);
+        if (is_dir($directory)) {
+            @rmdir($directory);
+        }
+    }
 }

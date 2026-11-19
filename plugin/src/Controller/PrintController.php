@@ -5,6 +5,7 @@ namespace GlpiPlugin\Zebrashipping\Controller;
 use Glpi\Controller\AbstractController;
 use GlpiPlugin\Zebrashipping\EntityDefaults;
 use GlpiPlugin\Zebrashipping\InstallationState;
+use GlpiPlugin\Zebrashipping\LicenseStorage;
 use GlpiPlugin\Zebrashipping\MetadataValue;
 use GlpiPlugin\Zebrashipping\ServiceClient;
 use Session;
@@ -20,12 +21,8 @@ final class PrintController extends AbstractController
         if (!$request->isMethod('POST')) {
             throw new \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException(['POST']);
         }
-        Session::checkLoginUser();
-
         $supported = [
-            'Computer', 'Monitor', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Unmanaged',
-            'Appliance', 'Rack', 'Enclosure', 'PDU', 'PassiveDCEquipment', 'Cable', 'Software',
-            'SoftwareLicense', 'Certificate', 'Ticket',
+            'Computer', 'Monitor', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Ticket',
         ];
         $itemtype = $request->request->getString('itemtype');
         $itemsId = $request->request->getInt('items_id');
@@ -33,15 +30,22 @@ final class PrintController extends AbstractController
             throw new \Glpi\Exception\Http\NotFoundHttpException();
         }
         $item = getItemForItemtype($itemtype);
-        if (!$item || !$item->getFromDB($itemsId) || !$item->canUpdate()) {
+        if (!$item || !$item->getFromDB($itemsId) || !$item->can($itemsId, UPDATE)) {
             throw new \Glpi\Exception\Http\NotFoundHttpException();
         }
 
-        $required = ['destination_city', 'recipient', 'address', 'phone', 'notes', 'printer_id'];
+        $limits = [
+            'destination_city' => 150,
+            'recipient' => 255,
+            'address' => 500,
+            'phone' => 80,
+            'notes' => 500,
+            'printer_id' => 64,
+        ];
         $form = [];
-        foreach ($required as $field) {
+        foreach ($limits as $field => $limit) {
             $form[$field] = trim($request->request->getString($field));
-            if (mb_strlen($form[$field]) > 500) {
+            if (mb_strlen($form[$field]) > $limit) {
                 Session::addMessageAfterRedirect(__('A shipping field is too long.', 'zebrashipping'), false, ERROR);
                 \Html::back();
             }
@@ -49,6 +53,14 @@ final class PrintController extends AbstractController
         if ($form['printer_id'] === '') {
             Session::addMessageAfterRedirect(__('Choose a printer.', 'zebrashipping'), false, ERROR);
             \Html::back();
+        }
+
+        foreach (['asset_name', 'asset_type', 'inventory_number', 'serial_number'] as $field) {
+            $form[$field] = trim($request->request->getString($field));
+            if (mb_strlen($form[$field]) > 500) {
+                Session::addMessageAfterRedirect(__('A shipping field is too long.', 'zebrashipping'), false, ERROR);
+                \Html::back();
+            }
         }
 
         $requestId = $request->request->getString('request_id');
@@ -68,8 +80,7 @@ final class PrintController extends AbstractController
         }
 
         $installState = InstallationState::get();
-        $licenseSettings = \Config::getConfigurationValues('plugin:zebrashipping');
-        $license = $licenseSettings['license_file'] ?? null;
+        $license = LicenseStorage::get();
         $defaults = EntityDefaults::forItem($item);
         $assetFields = [
             'asset_name' => MetadataValue::display($item->getField('name')),
@@ -78,12 +89,8 @@ final class PrintController extends AbstractController
             'serial_number' => MetadataValue::display($item->getField('serial')),
         ];
         foreach ($assetFields as $field => $default) {
-            $form[$field] = trim($request->request->has($field)
-                ? $request->request->getString($field)
-                : $default);
-            if (mb_strlen($form[$field]) > 500) {
-                Session::addMessageAfterRedirect(__('A shipping field is too long.', 'zebrashipping'), false, ERROR);
-                \Html::back();
+            if (!$request->request->has($field)) {
+                $form[$field] = $default;
             }
         }
         $label = [
@@ -97,6 +104,24 @@ final class PrintController extends AbstractController
             'serial_number' => $form['serial_number'],
             'notes' => $form['notes'],
         ];
+
+        try {
+            $client = new ServiceClient();
+            $printers = $client->printers();
+            $selectedPrinter = null;
+            foreach ($printers as $printer) {
+                if (($printer['id'] ?? null) === $form['printer_id'] && !empty($printer['enabled'])) {
+                    $selectedPrinter = $printer;
+                    break;
+                }
+            }
+            if ($selectedPrinter === null) {
+                throw new \InvalidArgumentException(__('Choose an enabled printer.', 'zebrashipping'));
+            }
+        } catch (\Throwable $error) {
+            Session::addMessageAfterRedirect(__('Printing failed: ', 'zebrashipping') . zebrashipping_escape($error->getMessage()), false, ERROR);
+            \Html::back();
+        }
 
         $record = [
             'request_id' => $requestId,
@@ -116,7 +141,6 @@ final class PrintController extends AbstractController
         $jobRowId = (int) $DB->insertId();
 
         try {
-            $client = new ServiceClient();
             $job = $client->print([
                 'request_id' => $requestId,
                 'printer_id' => $form['printer_id'],
@@ -135,7 +159,7 @@ final class PrintController extends AbstractController
             $DB->update('glpi_plugin_zebrashipping_jobs', [
                 'status' => 'failed', 'response_text' => $safeMessage,
             ], ['id' => $jobRowId]);
-            Session::addMessageAfterRedirect(__('Printing failed: ', 'zebrashipping') . $safeMessage, false, ERROR);
+            Session::addMessageAfterRedirect(__('Printing failed: ', 'zebrashipping') . zebrashipping_escape($safeMessage), false, ERROR);
         }
 
         \Html::back();

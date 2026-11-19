@@ -33,6 +33,11 @@ Demo: 14 days from first installation, up to two enabled printers, and 50 succes
   </authors>
   <versions>
     <version>
+      <num>0.2.7</num>
+      <compatibility>~11.0.0</compatibility>
+      <download_url>https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.7/glpi-zebrashipping-plugin-0.2.7.zip</download_url>
+    </version>
+    <version>
       <num>0.2.6</num>
       <compatibility>~11.0.0</compatibility>
       <download_url>https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.6/glpi-zebrashipping-plugin-0.2.6.zip</download_url>

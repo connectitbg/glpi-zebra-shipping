@@ -9,15 +9,26 @@ final class ServiceClient
 
     public function __construct()
     {
-        $this->baseUrl = rtrim(self::env('ZEBRASHIPPING_SERVICE_URL'), '/');
+        $configuredUrl = trim(self::env('ZEBRASHIPPING_SERVICE_URL'));
         $this->token = self::env('ZEBRASHIPPING_API_TOKEN');
-        if ($this->baseUrl === '' || $this->token === '') {
+        if ($configuredUrl === '' || $this->token === '') {
             throw new \RuntimeException('Print Service connection is not configured by the server administrator');
         }
-        if (!str_starts_with($this->baseUrl, 'http://127.0.0.1:')
-            && !str_starts_with($this->baseUrl, 'http://localhost:')) {
+        $parts = parse_url($configuredUrl);
+        if (!is_array($parts)) {
             throw new \RuntimeException('Print Service must use a loopback URL');
         }
+        $host = strtolower((string) ($parts['host'] ?? ''));
+        if (($parts['scheme'] ?? null) !== 'http'
+            || !in_array($host, ['127.0.0.1', 'localhost'], true)
+            || !isset($parts['port'])
+            || $parts['port'] < 1 || $parts['port'] > 65535
+            || isset($parts['user']) || isset($parts['pass'])
+            || isset($parts['query']) || isset($parts['fragment'])
+            || !in_array($parts['path'] ?? '', ['', '/'], true)) {
+            throw new \RuntimeException('Print Service must use a loopback URL');
+        }
+        $this->baseUrl = 'http://' . $host . ':' . (int) $parts['port'];
     }
 
     private static function env(string $name): string
