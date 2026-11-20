@@ -19,7 +19,9 @@ function plugin_zebrashipping_uninstall(): bool
 
     $migration = new Migration(PLUGIN_ZEBRASHIPPING_VERSION);
     $migration->dropTable('glpi_plugin_zebrashipping_jobs');
-    Config::deleteConfigurationValues('plugin:zebrashipping');
+    // GLPI requires the configuration keys to remove; without this list the
+    // license row remains in glpi_configs after plugin uninstall.
+    Config::deleteConfigurationValues('plugin:zebrashipping', ['license_file']);
     InstallationState::delete();
 
     return !$DB->tableExists('glpi_plugin_zebrashipping_jobs');
