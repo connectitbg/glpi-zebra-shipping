@@ -2,11 +2,11 @@
 
 ## Current status
 
-GLPI Zebra Shipping **0.2.7 is a stable, working release**. The public source and versioned plugin archive are available under GPL-2.0-or-later.
+GLPI Zebra Shipping **0.2.8 is tested and working**. The public source and 0.2.7 versioned plugin archive are available under GPL-2.0-or-later; publish a 0.2.8 archive before updating the catalog XML.
 
 - Physical printing has been demonstrated with a networked Zebra ZD421 using 93 × 71 mm labels.
 - GLPI 11.0.9 installation and activation have been verified on test and production instances.
-- The 0.2.7 security review findings were corrected and the plugin was redeployed to both instances.
+- The 0.2.7 security review findings were corrected; 0.2.8 completes uninstall cleanup by removing the named license configuration key.
 - Demo behavior remains 14 days from first installation, up to two enabled printers, 50 successful print jobs, and a visible `DEMO` label mark.
 
 See [printer compatibility](PRINTER_COMPATIBILITY.md) for the verified device and current scope.
@@ -30,4 +30,4 @@ Catalog listing and Marketplace approval are separate decisions; neither is guar
 
 ## Deployment
 
-The plugin is deployed as version 0.2.7 on the owner's production GLPI and the GLPI 11.0.9 test instance. The Print Service remains a separate local component. No printer address, customer database, service token, or signing key is part of the public source or plugin archive.
+The plugin is deployed as version 0.2.7 on the owner's production GLPI and version 0.2.8 on the GLPI 11.0.9 test instance. Version 0.2.8 adds the explicit configuration key list needed to remove the stored license on uninstall. The Print Service remains a separate local component. No printer address, customer database, service token, or signing key is part of the public source or plugin archive.
