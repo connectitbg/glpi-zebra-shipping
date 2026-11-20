@@ -2,7 +2,7 @@
 
 ## Current status
 
-GLPI Zebra Shipping **0.2.8 is tested and working**. The public source and 0.2.7 versioned plugin archive are available under GPL-2.0-or-later; publish a 0.2.8 archive before updating the catalog XML.
+GLPI Zebra Shipping **0.2.8 is tested and working**. The public source and 0.2.8 versioned plugin archive are available under GPL-2.0-or-later.
 
 - Physical printing has been demonstrated with a networked Zebra ZD421 using 93 × 71 mm labels.
 - GLPI 11.0.9 installation and activation have been verified on test and production instances.

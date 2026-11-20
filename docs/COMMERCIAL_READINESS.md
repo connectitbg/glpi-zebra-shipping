@@ -22,9 +22,9 @@ References: [GLPI plugin catalog and Marketplace tutorial](https://glpi-develope
 
 ## Stable release and remaining publication work
 
-The tested 0.2.8 code is stable and working; the published archive remains 0.2.7 until the 0.2.8 release archive is published. Physical printing has been demonstrated on a network-connected Zebra ZD421 with 93 × 71 mm media. Other ZPL models are expected to work over raw TCP but have not all been individually verified. USB printing is unsupported, outside project scope, and is not planned.
+The stable 0.2.8 code and versioned plugin archive are published. Physical printing has been demonstrated on a network-connected Zebra ZD421 with 93 × 71 mm media. Other ZPL models are expected to work over raw TCP but have not all been individually verified. USB printing is unsupported, outside project scope, and is not planned.
 
-- The public Git repository, GPL-2.0-or-later source, 0.2.7 release archive, and catalog XML are available.
+- The public Git repository, GPL-2.0-or-later source, 0.2.8 release archive, and catalog XML are available.
 - The 0.2.7 security review findings were addressed. Version 0.2.8 fixes removal of the stored license configuration during uninstall.
 - Resolve the catalog form's `UNAVAILABLE_NAME` response and obtain catalog acceptance.
 - Confirm the publisher meets GLPI's authorship/developer eligibility requirement for Marketplace review.

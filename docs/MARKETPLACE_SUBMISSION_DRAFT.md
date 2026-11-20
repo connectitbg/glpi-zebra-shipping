@@ -7,13 +7,13 @@ This document tracks the stable catalog listing and its separate Marketplace rev
 - Display name: GLPI Zebra Shipping
 - Technical key: `zebrashipping`
 - Publisher: `Connect IT`
-- Current catalog archive: `0.2.7` (the tested 0.2.8 uninstall fix is on the main branch; publish a matching release archive before updating this catalog metadata)
+- Current catalog archive: `0.2.8`
 - GLPI compatibility tested: GLPI `11.0.9`; declared minimum: `11.0`
 - Plugin source: <https://github.com/connectitbg/glpi-zebra-shipping>
 - License: GPL-2.0-or-later; one-time Professional sale is for the official build and does not remove GPL rights.
 - Publisher/support contact: public GitHub issues can be used initially; a monitored support address and maintenance commitment still need to be selected.
 - Logo and public screenshots: not prepared. Existing test screenshots contain environment and asset details and must not be published as-is.
-- Download URL: <https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.7/glpi-zebrashipping-plugin-0.2.7.zip>
+- Download URL: <https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.8/glpi-zebrashipping-plugin-0.2.8.zip>
 
 ## Proposed short description
 
@@ -25,7 +25,7 @@ GLPI Zebra Shipping adds a shipping-label tab to supported GLPI assets and ticke
 
 The demo is limited to 14 days from first installation, two enabled printers, and 50 successful print jobs. A one-time Professional purchase is planned for perpetual use of the official release within major version 1.x. Licensing is verified offline and does not require a license server. The source is GPL-2.0-or-later, so users retain the right to modify and redistribute the code under the GPL.
 
-The 0.2.7 release has been installed on GLPI 11.0.9 test and production instances. Physical printing has been demonstrated with a network Zebra ZD421 using 93 × 71 mm media. Version 0.2.5 added asset name, asset type, inventory number, and serial number below the address. Version 0.2.6 made those fields editable and added recovery export/restore for the license and installation identity. Version 0.2.7 addresses the reported access-control, license-storage, uninstall, validation, and local-service URL findings. A follow-up 0.2.8 fix explicitly removes the stored license key during uninstall and has passed the test-server uninstall/reinstall check; its release archive still needs to be published before updating this catalog metadata. The recovery file does not replace backups of GLPI or Print Service data. Demo labels retain the `DEMO` mark.
+The 0.2.8 release has been installed on the GLPI 11.0.9 test instance. Physical printing has been demonstrated with a network Zebra ZD421 using 93 × 71 mm media. Version 0.2.5 added asset name, asset type, inventory number, and serial number below the address. Version 0.2.6 made those fields editable and added recovery export/restore for the license and installation identity. Version 0.2.7 addresses the reported access-control, license-storage, uninstall, validation, and local-service URL findings. Version 0.2.8 explicitly removes the stored license key during uninstall and passed the test-server uninstall/reinstall check. The recovery file does not replace backups of GLPI or Print Service data. Demo labels retain the `DEMO` mark.
 
 The plugin is intended for Zebra printers on the network and is expected to work with other printers accepting ZPL over raw TCP. Other models have not been individually validated. USB printer compatibility is unknown and unsupported; USB printing is out of scope and is not planned.
 
