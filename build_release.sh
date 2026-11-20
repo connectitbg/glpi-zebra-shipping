@@ -2,8 +2,8 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-DIST=$ROOT/dist/release-0.2.7
-PLUGIN_VERSION=0.2.7
+DIST=$ROOT/dist/release-0.2.8
+PLUGIN_VERSION=0.2.8
 SERVICE_VERSION=0.2.3
 
 if [ -e "$DIST" ]; then
