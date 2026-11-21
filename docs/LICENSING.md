@@ -8,6 +8,8 @@ The repository and both product components are licensed under **GPL-2.0-or-later
 
 The planned Professional purchase is a one-time payment for perpetual use of the official Professional release within major version 1.x. License files are installation-bound and verified offline; there is no license server or recurring activation check. The exact price, refund terms, and transfer/reissue policy must be published before taking payment.
 
+Editing and using a custom ZPL label template is a Professional feature. Demo users see a locked preview in GLPI; both the plugin settings controller and the Print Service enforce the license requirement. A recovery export includes the custom template, if configured, along with the installation identity and license.
+
 ## Verify or create the signing key
 
 Before issuing a paid license, confirm that the matching public key is configured on the Print Service and that the encrypted private key has a tested, owner-controlled offline backup. If there is no existing key, run the key generator in a protected operator environment that has the Print Service Python dependencies installed:

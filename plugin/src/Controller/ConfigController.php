@@ -6,6 +6,7 @@ use Glpi\Controller\AbstractController;
 use GlpiPlugin\Zebrashipping\InstallationState;
 use GlpiPlugin\Zebrashipping\LicenseStorage;
 use GlpiPlugin\Zebrashipping\ServiceClient;
+use GlpiPlugin\Zebrashipping\ZplTemplate;
 use Session;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,11 +21,12 @@ final class ConfigController extends AbstractController
 
         $messages = [];
         $license = LicenseStorage::get();
+        $zplTemplate = ZplTemplate::get();
         $installState = InstallationState::get();
         $service = null;
 
         if ($request->isMethod('GET') && $request->query->getBoolean('download_recovery')) {
-            $payload = self::recoveryPayload($installState, $license);
+            $payload = self::recoveryPayload($installState, $license, $zplTemplate);
             $response = new Response(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
             $response->headers->set('Content-Type', 'application/json; charset=utf-8');
             $response->headers->set('Content-Disposition', 'attachment; filename="zebrashipping-recovery.json"');
@@ -49,13 +51,25 @@ final class ConfigController extends AbstractController
                     }
                     LicenseStorage::store($license);
                     $messages[] = __('License saved.', 'zebrashipping');
+                } elseif ($request->request->has('save_zpl_template')) {
+                    $status = $service->licenseStatus($installState, $license ?: null);
+                    if (empty($status['valid']) || ($status['edition'] ?? '') !== 'professional') {
+                        throw new \RuntimeException(__('Custom ZPL templates are available in the Professional edition.', 'zebrashipping'));
+                    }
+                    $zplTemplate = ZplTemplate::validate($request->request->getString('zpl_template'));
+                    ZplTemplate::store($zplTemplate);
+                    $messages[] = $zplTemplate === ''
+                        ? __('Custom ZPL template cleared. The built-in label layout will be used.', 'zebrashipping')
+                        : __('Custom ZPL template saved.', 'zebrashipping');
                 } elseif ($request->request->has('clear_license')) {
                     LicenseStorage::store('');
+                    ZplTemplate::store('');
                     $license = '';
+                    $zplTemplate = '';
                     $messages[] = __('License removed.', 'zebrashipping');
                 } elseif ($request->request->has('restore_recovery')) {
                     $rawBackup = trim($request->request->getString('recovery_backup'));
-                    if ($rawBackup === '' || strlen($rawBackup) > 16384) {
+                    if ($rawBackup === '' || strlen($rawBackup) > 65536) {
                         throw new \InvalidArgumentException(__('Recovery backup is empty or too large.', 'zebrashipping'));
                     }
                     $backup = json_decode($rawBackup, true, 16, JSON_THROW_ON_ERROR);
@@ -64,7 +78,9 @@ final class ConfigController extends AbstractController
                         || ($backup['format_version'] ?? null) !== 1
                         || !is_array($backup['installation'] ?? null)
                         || !is_string($backup['license_file'] ?? null)
-                        || mb_strlen($backup['license_file']) > 8192) {
+                        || mb_strlen($backup['license_file']) > 8192
+                        || !is_string($backup['zpl_template'] ?? '')
+                        || strlen($backup['zpl_template'] ?? '') > ZplTemplate::MAX_LENGTH) {
                         throw new \InvalidArgumentException(__('This is not a supported Zebra Shipping recovery backup.', 'zebrashipping'));
                     }
                     $restoredState = InstallationState::validate($backup['installation']);
@@ -73,8 +89,13 @@ final class ConfigController extends AbstractController
                     if (empty($restoredStatus['valid'])) {
                         throw new \RuntimeException(__('The recovery backup license or demo period is not valid.', 'zebrashipping'));
                     }
+                    $restoredTemplate = ZplTemplate::validate($backup['zpl_template'] ?? '');
+                    if ($restoredTemplate !== '' && ($restoredStatus['edition'] ?? '') !== 'professional') {
+                        throw new \RuntimeException(__('A Professional license is required to restore a custom ZPL template.', 'zebrashipping'));
+                    }
                     InstallationState::restore($restoredState);
                     LicenseStorage::store($restoredLicense);
+                    ZplTemplate::store($restoredTemplate);
                     $installState = $restoredState;
                     $license = $restoredLicense;
                     $messages[] = __('Recovery backup restored. Save a new backup after changing your license.', 'zebrashipping');
@@ -126,6 +147,7 @@ final class ConfigController extends AbstractController
             }
 
             $licenseStatus = $service->licenseStatus($installState, $license ?: null);
+            $zplTemplate = ZplTemplate::get();
             $printers = $service->printers();
         } catch (\Throwable $error) {
             $messages[] = $error->getMessage();
@@ -185,14 +207,36 @@ final class ConfigController extends AbstractController
             . self::escape(__('Save license', 'zebrashipping')) . '</button> '
             . '<button class="btn btn-outline-danger mt-2" name="clear_license" value="1">'
             . self::escape(__('Remove license', 'zebrashipping')) . '</button></form>';
+        echo '<h3 class="mt-4">' . self::escape(__('Custom ZPL label template', 'zebrashipping')) . '</h3>';
+        $professional = is_array($licenseStatus)
+            && !empty($licenseStatus['valid'])
+            && ($licenseStatus['edition'] ?? '') === 'professional';
+        if ($professional) {
+            echo '<p>' . self::escape(__('Available only with a valid Professional license. Leave the field empty to use the built-in label layout. Supported placeholders:', 'zebrashipping'))
+                . ' <code>{{width_dots}}</code>, <code>{{height_dots}}</code>, <code>{{dpi}}</code>, <code>{{city}}</code>, <code>{{recipient}}</code>, <code>{{address}}</code>, <code>{{phone}}</code>, <code>{{asset_name}}</code>, <code>{{asset_type}}</code>, <code>{{inventory_number}}</code>, <code>{{serial_number}}</code>, <code>{{notes}}</code>.</p>';
+            echo '<form method="post" action="' . self::escape($configUrl) . '">';
+            self::csrfField();
+            echo '<label for="zs_zpl_template">' . self::escape(__('ZPL template', 'zebrashipping')) . '</label>';
+            echo '<textarea class="form-control font-monospace" id="zs_zpl_template" name="zpl_template" rows="16" maxlength="'
+                . ZplTemplate::MAX_LENGTH . '" spellcheck="false">' . self::escape($zplTemplate) . '</textarea>';
+            echo '<button class="btn btn-primary mt-2" name="save_zpl_template" value="1">'
+                . self::escape(__('Save ZPL template (clear the field to use the built-in layout)', 'zebrashipping'))
+                . '</button></form>';
+        } else {
+            echo '<p>' . self::escape(__('Professional feature: customize the printer ZPL label template with fields from the GLPI record. Upgrade to Professional to edit and use a custom template.', 'zebrashipping')) . '</p>';
+            echo '<textarea class="form-control font-monospace" rows="8" disabled aria-label="'
+                . self::escape(__('Professional ZPL template editor preview', 'zebrashipping')) . '">'
+                . self::escape("^XA\n^PW{{width_dots}}\n^LL{{height_dots}}\n^CI28\n^FO24,24^A0N,32,32^FD{{recipient}}^FS\n^FO24,70^A0N,24,24^FD{{address}}^FS\n^XZ")
+                . '</textarea>';
+        }
         echo '<h3 class="mt-4">' . self::escape(__('License and recovery backup', 'zebrashipping')) . '</h3>';
-        echo '<p>' . self::escape(__('Download this recovery file and keep it in a secure location. It contains the license and installation identity, but not your GLPI database or signing key.', 'zebrashipping')) . '</p>';
+        echo '<p>' . self::escape(__('Download this recovery file and keep it in a secure location. It contains the license, installation identity, and custom ZPL template, but not your GLPI database or signing key.', 'zebrashipping')) . '</p>';
         echo '<p><a class="btn btn-outline-primary" href="' . self::escape($configUrl . '?download_recovery=1') . '">'
             . self::escape(__('Download recovery backup', 'zebrashipping')) . '</a></p>';
         echo '<form method="post" action="' . self::escape($configUrl) . '">';
         self::csrfField();
         echo '<label for="zs_recovery_backup">' . self::escape(__('Recovery backup JSON', 'zebrashipping')) . '</label>';
-        echo '<textarea class="form-control font-monospace" id="zs_recovery_backup" name="recovery_backup" rows="8" maxlength="16384" spellcheck="false" placeholder="'
+        echo '<textarea class="form-control font-monospace" id="zs_recovery_backup" name="recovery_backup" rows="8" maxlength="65536" spellcheck="false" placeholder="'
             . self::escape(__('Paste the contents of a previously downloaded recovery backup.', 'zebrashipping'))
             . '"></textarea><button class="btn btn-outline-secondary mt-2" name="restore_recovery" value="1">'
             . self::escape(__('Restore from recovery backup', 'zebrashipping')) . '</button></form>';
@@ -235,7 +279,7 @@ final class ConfigController extends AbstractController
         return $value;
     }
 
-    private static function recoveryPayload(array $installation, string $license): array
+    private static function recoveryPayload(array $installation, string $license, string $zplTemplate): array
     {
         return [
             'format_version' => 1,
@@ -243,6 +287,7 @@ final class ConfigController extends AbstractController
             'created_at' => gmdate(DATE_ATOM),
             'installation' => InstallationState::validate($installation),
             'license_file' => $license,
+            'zpl_template' => $zplTemplate,
         ];
     }
 

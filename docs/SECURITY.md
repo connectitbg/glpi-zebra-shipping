@@ -29,4 +29,5 @@ Never commit:
 - The service creates a new local SQLite database for trial state and job metadata; it does not import a GLPI database.
 - GLPI stores shipping destination/contact fields and job history in its own new plugin table.
 - The service's SQLite database, printer configuration, license files, and generated keys are deployment data and must not be copied into the product source archive.
+- Professional users can save administrator-supplied ZPL templates. The service independently enforces the Professional license, limits template size, validates placeholders, and strips ZPL command markers/control characters from substituted GLPI values. Custom ZPL commands are intentionally passed through to the configured printer; only trusted administrators should edit a template, and they should validate it on their printer.
 - The GLPI recovery export does not replace a full backup: printer settings, API tokens, job history, and Print Service trial state remain in their respective GLPI or service data stores.

@@ -8,6 +8,7 @@ use GlpiPlugin\Zebrashipping\InstallationState;
 use GlpiPlugin\Zebrashipping\LicenseStorage;
 use GlpiPlugin\Zebrashipping\MetadataValue;
 use GlpiPlugin\Zebrashipping\ServiceClient;
+use GlpiPlugin\Zebrashipping\ZplTemplate;
 use Session;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -141,14 +142,22 @@ final class PrintController extends AbstractController
         $jobRowId = (int) $DB->insertId();
 
         try {
-            $job = $client->print([
+            $printPayload = [
                 'request_id' => $requestId,
                 'printer_id' => $form['printer_id'],
                 'installation_id' => $installState['installation_id'],
                 'trial_started_at' => $installState['installed_at'],
                 'license_file' => $license ?: null,
                 'label' => $label,
-            ]);
+            ];
+            $zplTemplate = ZplTemplate::get();
+            if ($zplTemplate !== '' && $license !== '') {
+                $licenseStatus = $client->licenseStatus($installState, $license);
+                if (!empty($licenseStatus['valid']) && ($licenseStatus['edition'] ?? '') === 'professional') {
+                    $printPayload['zpl_template'] = $zplTemplate;
+                }
+            }
+            $job = $client->print($printPayload);
             $DB->update('glpi_plugin_zebrashipping_jobs', [
                 'service_job_id' => $job['id'] ?? null, 'status' => $job['status'] ?? 'sent',
                 'response_text' => null,

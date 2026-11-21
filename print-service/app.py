@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
-APP_VERSION = "0.2.3"
+APP_VERSION = "0.2.4"
 DEMO_DAYS = 14
 DEMO_PRINT_LIMIT = 50
 DEMO_PRINTER_LIMIT = 2
@@ -112,6 +112,7 @@ class PrintRequest(BaseModel):
     trial_started_at: str | None = Field(default=None, max_length=40)
     license_file: str | None = Field(default=None, max_length=8192)
     label: dict[str, str] = Field()
+    zpl_template: str | None = Field(default=None, max_length=16384)
 
     @field_validator("label")
     @classmethod
@@ -123,6 +124,26 @@ class PrintRequest(BaseModel):
         if any(len(value) > 500 for value in values.values()):
             raise ValueError("Label fields must be at most 500 characters")
         return values
+
+    @field_validator("zpl_template")
+    @classmethod
+    def valid_zpl_template(cls, value: str | None) -> str | None:
+        if value is None or value == "":
+            return value
+        value = value.strip()
+        if len(value.encode("utf-8")) > 16384:
+            raise ValueError("ZPL template is too large")
+        if not value.startswith("^XA") or not value.endswith("^XZ"):
+            raise ValueError("ZPL template must start with ^XA and end with ^XZ")
+        allowed = {"width_dots", "height_dots", "dpi", "city", "recipient", "address", "phone",
+                   "asset_name", "asset_type", "inventory_number", "serial_number", "notes"}
+        tokens = re.findall(r"\{\{([a-z_]+)\}\}", value)
+        if any(token not in allowed for token in tokens) or "{{" in re.sub(r"\{\{[a-z_]+\}\}", "", value) \
+                or "}}" in re.sub(r"\{\{[a-z_]+\}\}", "", value):
+            raise ValueError("ZPL template contains an unsupported placeholder")
+        if any(ord(ch) < 32 and ch not in "\n\t" for ch in value):
+            raise ValueError("ZPL template contains an unsupported control character")
+        return value
 
 
 def _authorized(authorization: str | None) -> None:
@@ -353,6 +374,23 @@ def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
     return "\n".join(commands).encode("utf-8")
 
 
+def _custom_zpl(template: str, label: dict[str, str], printer: dict[str, Any]) -> bytes:
+    width = round(float(printer["width_mm"]) * int(printer["dpi"]) / 25.4)
+    height = round(float(printer["height_mm"]) * int(printer["dpi"]) / 25.4)
+    values = {
+        "width_dots": str(width),
+        "height_dots": str(height),
+        "dpi": str(int(printer["dpi"])),
+    }
+    for field in ("city", "recipient", "address", "phone", "asset_name", "asset_type",
+                  "inventory_number", "serial_number", "notes"):
+        values[field] = _clean_zpl_text(label.get(field, ""))
+    rendered = re.sub(r"\{\{([a-z_]+)\}\}", lambda match: values[match.group(1)], template)
+    if "{{" in rendered or "}}" in rendered:
+        raise HTTPException(422, "ZPL template contains an unresolved placeholder")
+    return rendered.encode("utf-8")
+
+
 def _job(row: sqlite3.Row) -> dict[str, Any]:
     return {"id": row["id"], "request_id": row["request_id"], "printer_id": row["printer_id"],
             "status": row["status"], "created_at": row["created_at"], "error": row["error_code"]}
@@ -415,10 +453,13 @@ def print_label(request: PrintRequest, authorization: str | None = Header(defaul
     license_state = _license_status(request.installation_id, request.license_file, request.trial_started_at)
     if not license_state["valid"]:
         raise HTTPException(403, "License or demo period has expired")
+    if request.zpl_template and license_state["edition"] != "professional":
+        raise HTTPException(403, "Custom ZPL templates require a Professional license")
     printer = _find_printer(request.printer_id)
     # Validate and render before reserving a demo print. Invalid content must
     # not consume a successful-job allowance or leave a queued history row.
-    raw = _zpl(request.label, printer, license_state["edition"] == "demo")
+    raw = (_custom_zpl(request.zpl_template, request.label, printer)
+           if request.zpl_template else _zpl(request.label, printer, license_state["edition"] == "demo"))
     job_id = str(uuid.uuid4())
     created_at = _utcnow().isoformat()
     with _connect() as db:

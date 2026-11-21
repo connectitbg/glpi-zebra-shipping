@@ -35,9 +35,11 @@ The sample configuration has `printers: []`. Add a printer later in **Setup → 
 
 ### License and recovery backup
 
-On the plugin settings page, administrators can edit and save a Professional license, download a recovery JSON file, or restore from pasted recovery JSON. The recovery file contains the license (when present), installation ID, and original installation timestamp. Keep it private because it contains the customer activation license.
+On the plugin settings page, administrators can edit and save a Professional license, download a recovery JSON file, or restore from pasted recovery JSON. The recovery file contains the license (when present), installation ID, original installation timestamp, and custom ZPL template (when configured). Keep it private because it contains the customer activation license.
 
-The recovery file does not contain the GLPI database, printer configuration, API token, or Print Service SQLite state. For complete disaster recovery, back up the GLPI database, `GLPI_VAR_DIR/plugins/zebrashipping`, `/etc/zebrashipping`, and `/var/lib/zebrashipping` together. Restore the GLPI database and Print Service data first, then use the recovery panel if the plugin's installation identity or license needs restoring.
+Professional license holders can also save an optional custom ZPL label template in the plugin settings. The editor accepts a complete ZPL format (`^XA` through `^XZ`) and supports `{{width_dots}}`, `{{height_dots}}`, `{{dpi}}`, `{{city}}`, `{{recipient}}`, `{{address}}`, `{{phone}}`, `{{asset_name}}`, `{{asset_type}}`, `{{inventory_number}}`, `{{serial_number}}`, and `{{notes}}`. GLPI sends the template only with print requests; the Print Service independently rejects custom templates in demo edition. Placeholder values are stripped of ZPL command markers and control characters. Administrators are responsible for testing custom command layouts on their printers. Leave the editor empty to use the built-in layout. Demo users see a locked feature preview.
+
+The recovery file does not contain the GLPI database, printer configuration, API token, or Print Service SQLite state. It includes the custom template when configured; treat it as customer configuration and keep it private. For complete disaster recovery, back up the GLPI database, `GLPI_VAR_DIR/plugins/zebrashipping`, `/etc/zebrashipping`, and `/var/lib/zebrashipping` together. Restore the GLPI database and Print Service data first, then use the recovery panel if the plugin's installation identity, license, or custom template needs restoring.
 
 ## Security and data handling
 
