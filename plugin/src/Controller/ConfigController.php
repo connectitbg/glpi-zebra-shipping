@@ -229,6 +229,9 @@ final class ConfigController extends AbstractController
                 . self::escape("^XA\n^PW{{width_dots}}\n^LL{{height_dots}}\n^CI28\n^FO24,24^A0N,32,32^FD{{recipient}}^FS\n^FO24,70^A0N,24,24^FD{{address}}^FS\n^XZ")
                 . '</textarea>';
         }
+        echo '<p class="mt-2"><a href="https://github.com/connectitbg/glpi-zebra-shipping/blob/main/docs/CUSTOM_ZPL_TEMPLATES.md" target="_blank" rel="noopener noreferrer">'
+            . self::escape(__('Read the custom ZPL template guide (placeholders, examples, and testing)', 'zebrashipping'))
+            . '</a></p>';
         echo '<h3 class="mt-4">' . self::escape(__('License and recovery backup', 'zebrashipping')) . '</h3>';
         echo '<p>' . self::escape(__('Download this recovery file and keep it in a secure location. It contains the license, installation identity, and custom ZPL template, but not your GLPI database or signing key.', 'zebrashipping')) . '</p>';
         echo '<p><a class="btn btn-outline-primary" href="' . self::escape($configUrl . '?download_recovery=1') . '">'

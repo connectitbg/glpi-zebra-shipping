@@ -2,8 +2,8 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-DIST=$ROOT/dist/release-0.2.9
-PLUGIN_VERSION=0.2.9
+DIST=$ROOT/dist/release-0.2.10
+PLUGIN_VERSION=0.2.10
 SERVICE_VERSION=0.2.4
 
 if [ -e "$DIST" ]; then
@@ -17,10 +17,12 @@ tar -C "$ROOT/plugin" \
     --exclude='*.db' --exclude='*.sqlite' --exclude='*.sqlite3' --exclude='*.sql' \
     --exclude='*.log' --exclude='vendor' --exclude='.git' \
     -cf - . | tar -C "$DIST/plugin/zebrashipping" -xf -
+mkdir -p "$DIST/plugin/zebrashipping/docs"
+cp "$ROOT/docs/CUSTOM_ZPL_TEMPLATES.md" "$DIST/plugin/zebrashipping/docs/CUSTOM_ZPL_TEMPLATES.md"
 cp "$ROOT/print-service/app.py" "$ROOT/print-service/requirements.txt" \
    "$ROOT/print-service/config.example.json" "$ROOT/print-service/zebrashipping.service" \
    "$ROOT/print-service/install_debian.sh" "$DIST/print-service/zebrashipping-print-service/"
-cp "$ROOT/docs/INSTALLATION.md" "$DIST/INSTALLATION.md"
+cp "$ROOT/docs/INSTALLATION.md" "$ROOT/docs/CUSTOM_ZPL_TEMPLATES.md" "$DIST/"
 cp "$ROOT/LICENSE" "$DIST/plugin/zebrashipping/LICENSE"
 cp "$ROOT/LICENSE" "$DIST/print-service/zebrashipping-print-service/LICENSE"
 
