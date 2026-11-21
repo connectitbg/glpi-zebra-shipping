@@ -12,10 +12,10 @@ Version 0.2.9 adds an optional ZPL label template editor for installations with 
 - The Print Service test suite passed: 5 tests covering supported placeholders, invalid templates, substitutions and input sanitization, demo edition enforcement, and the demo mark on the built-in label.
 - The Print Service health endpoint returned `ok` with service version 0.2.4.
 - GLPI reported plugin version 0.2.9 as enabled after the plugin was activated and GLPI cache was cleared. The settings route redirected unauthenticated requests to authentication, as expected.
+- In an authenticated browser session on the demo test instance, the settings page showed the editor in a disabled preview with the upgrade notice.
 - `git diff --check` passed.
 
 ## Not covered
 
 - No physical label was printed as part of this change. The existing built-in label flow remains the fallback when no custom template is configured.
-- The settings page was not visually inspected in an authenticated browser session during this verification run.
 
