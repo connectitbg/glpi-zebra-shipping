@@ -7,13 +7,13 @@ This document tracks the stable catalog listing and its separate Marketplace rev
 - Display name: GLPI Zebra Shipping
 - Technical key: `zebrashipping`
 - Publisher: `Connect IT`
-- Current catalog archive: `0.2.9`
+- Current catalog archive: `0.2.10`
 - GLPI compatibility tested: GLPI `11.0.9`; declared minimum: `11.0`
 - Plugin source: <https://github.com/connectitbg/glpi-zebra-shipping>
 - License: GPL-2.0-or-later; one-time Professional sale is for the official build and does not remove GPL rights.
 - Publisher/support contact: public GitHub issues can be used initially; a monitored support address and maintenance commitment still need to be selected.
 - Logo and public screenshots: not prepared. Existing test screenshots contain environment and asset details and must not be published as-is.
-- Download URL: <https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.9/glpi-zebrashipping-plugin-0.2.9.zip>
+- Download URL: <https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.10/glpi-zebrashipping-plugin-0.2.10.zip>
 
 ## Proposed short description
 

@@ -10,7 +10,7 @@
 
 ## Go-live gates before accepting payment
 
-1. **Set the offer.** Decide the price, what “perpetual 1.x” means for buyers, whether sales begin with the current 0.2.9 line or a 1.0 release, and the refund, transfer, and reissue terms. Ensure the public product page and license agree.
+1. **Set the offer.** Decide the price, what “perpetual 1.x” means for buyers, whether sales begin with the current 0.2.10 line or a 1.0 release, and the refund, transfer, and reissue terms. Ensure the public product page and license agree.
 2. **Set up payment and fulfillment.** Choose a merchant/payment provider and owner-controlled payout account. Decide how invoices/receipts, refunds, customer support, and delivery will work. Ask the accountant about applicable tax and invoicing obligations before taking payment.
 3. **Confirm signing-key readiness.** Confirm that the encrypted Ed25519 private key and a tested offline backup are held in an owner-controlled environment. Confirm that the matching public key is configured in the production Print Service as `ZEBRASHIPPING_LICENSE_PUBLIC_KEY`. If no key exists, generate one offline using `licensing/generate_keys.py`. Never store the private key in Git, GLPI, a customer server, or this runbook.
 4. **Test fulfillment in staging.** Generate a test license for a disposable GLPI installation ID, install it through the UI, verify Professional status and limits, and test recovery. Do not use a real customer's license or a production installation ID in a public demonstration.
