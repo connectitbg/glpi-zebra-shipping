@@ -1,10 +1,10 @@
 # GLPI Zebra Shipping
 
-Open-source shipping-label printing from GLPI 11 to administrator-configured Zebra network printers.
+Open-source shipping-label printing from GLPI 11 and 12 to administrator-configured Zebra network printers.
 
 **Publisher:** Connect IT
 
-The latest release is `0.2.10`. Physical printing has been demonstrated with a networked Zebra ZD421 using 93 × 71 mm media. Other network printers that accept ZPL over raw TCP are expected to work, but model-specific compatibility has not been verified for every printer. USB printer compatibility is unknown and unsupported; USB printing is outside the project scope and is not planned. See [printer compatibility](docs/PRINTER_COMPATIBILITY.md).
+The latest release is `0.2.11`. GLPI 12 compatibility was tested on GLPI 12.0.2; GLPI 11 support remains declared. Physical printing has been demonstrated with a networked Zebra ZD421 using 93 × 71 mm media. Other network printers that accept ZPL over raw TCP are expected to work, but model-specific compatibility has not been verified for every printer. USB printer compatibility is unknown and unsupported; USB printing is outside the project scope and is not planned. See [printer compatibility](docs/PRINTER_COMPATIBILITY.md).
 
 The plugin includes per-record GLPI access checks, validated printer selection and field sizes, encrypted license storage, complete uninstall cleanup, and hardened local-service URL validation. Labels include a large recipient/company heading and address plus asset name, type, inventory number, and serial number. Asset metadata is prefilled and editable. Professional administrators can edit a ZPL template in GLPI using documented placeholders; demo users see the feature but cannot edit or apply a custom template. Administrators can export or restore a recovery file containing the license, installation identity, and custom template. Demo labels keep the `DEMO` mark.
 

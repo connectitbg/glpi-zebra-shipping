@@ -4,7 +4,7 @@ This is an installation guide for a new deployment. The installer does not read 
 
 ## Requirements
 
-- GLPI 11.x and PHP 8.2+ with the cURL extension.
+- GLPI 11.x or 12.x (GLPI 12.0.2 tested) and PHP 8.2+ with the cURL extension.
 - Debian 12 or a compatible Linux host for the separate Print Service.
 - Python 3.11+ and access to the Zebra printers on the local network.
 - TCP 9100 (or the configured raw-print port) reachable from the Print Service host.

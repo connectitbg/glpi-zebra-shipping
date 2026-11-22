@@ -12,6 +12,8 @@
     <long>
       <en><![CDATA[Adds a shipping-label tab to supported GLPI assets and tickets. Configure printers and media dimensions in the plugin, then send labels through the separately installed local Print Service. No printer address is preconfigured in the source.
 
+Version 0.2.11 declares GLPI 11.x and 12.x compatibility; GLPI 12 support was checked on GLPI 12.0.2.
+
 Printing has been demonstrated with a network-connected Zebra ZD421 using 93 × 71 mm media. The plugin is intended for Zebra printers and is expected to work with other network printers that accept ZPL over raw TCP; other models have not all been individually validated. USB printer compatibility is unknown and unsupported. USB printing is outside the project's network-printing scope and is not planned.
 
 Asset metadata fields are prefilled from GLPI and editable before printing. Professional administrators can save and use custom ZPL label templates in GLPI; demo users see a locked preview. Administrators can save Professional licenses and export or restore a recovery file containing the license, installation identity, and custom template. The recovery file does not include GLPI or printer configuration. Demo labels retain the `DEMO` mark.
@@ -32,6 +34,11 @@ Demo: 14 days from first installation, up to two enabled printers, and 50 succes
     <author>Connect IT</author>
   </authors>
   <versions>
+    <version>
+      <num>0.2.11</num>
+      <compatibility>^11.0 || ^12.0</compatibility>
+      <download_url>https://github.com/connectitbg/glpi-zebra-shipping/releases/download/v0.2.11/glpi-zebrashipping-plugin-0.2.11.zip</download_url>
+    </version>
     <version>
       <num>0.2.10</num>
       <compatibility>~11.0.0</compatibility>
