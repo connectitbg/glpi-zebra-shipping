@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
-APP_VERSION = "0.2.4"
+APP_VERSION = "0.2.5"
 DEMO_DAYS = 14
 DEMO_PRINT_LIMIT = 50
 DEMO_PRINTER_LIMIT = 2
@@ -111,6 +111,7 @@ class PrintRequest(BaseModel):
     installation_id: str = Field(min_length=8, max_length=80)
     trial_started_at: str | None = Field(default=None, max_length=40)
     license_file: str | None = Field(default=None, max_length=8192)
+    copies: int = Field(default=1, ge=1, le=100)
     label: dict[str, str] = Field()
     zpl_template: str | None = Field(default=None, max_length=16384)
 
@@ -257,9 +258,9 @@ def _license_status(installation_id: str, encoded: str | None = None,
             "printer_limit": DEMO_PRINTER_LIMIT}
 
 
-def _clean_zpl_text(value: str) -> str:
+def _clean_zpl_text(value: str, max_length: int = 180) -> str:
     # Escape ZPL command markers and ASCII control characters from user-provided data.
-    return re.sub(r"[\^~\r\n\x00-\x1f]", " ", value).strip()[:180]
+    return re.sub(r"[\^~\r\n\x00-\x1f]", " ", value).strip()[:max_length]
 
 
 def _wrap_label_text(value: str, width: int, font_size: int, max_lines: int) -> list[str]:
@@ -332,6 +333,20 @@ def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
     phone_size = max(16, round(26 * scale))
     phone_lines = _wrap_label_text(f"Телефон: {phone}", content_width, phone_size, max_lines=2) if phone else []
 
+    notes = _clean_zpl_text(label.get("notes", ""), max_length=500)
+    note_lines: list[str] = []
+    note_size = max(14, round(20 * scale))
+    if notes:
+        note_text = f"Бележки: {notes}"
+        while note_size >= max(12, round(14 * scale)):
+            try:
+                note_lines = _wrap_label_text(note_text, content_width, note_size, max_lines=4)
+                break
+            except HTTPException:
+                note_size -= 2
+        if not note_lines:
+            raise HTTPException(422, "Notes do not fit on this label; shorten them or use a Professional custom ZPL template")
+
     metadata_size = max(18, round(30 * scale))
     minimum_metadata_size = max(14, round(18 * scale))
     metadata_gap = max(2, round(3 * scale))
@@ -347,7 +362,8 @@ def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
             candidate_lines = []
         candidate_height = len(candidate_lines) * (metadata_size + metadata_gap)
         phone_height = len(phone_lines) * (phone_size + round(3 * scale))
-        if candidate_lines and y + candidate_height + phone_height <= height - margin:
+        notes_height = len(note_lines) * (note_size + round(2 * scale))
+        if candidate_lines and y + candidate_height + phone_height + notes_height <= height - margin:
             metadata_lines = candidate_lines
             break
         metadata_size -= 2
@@ -368,6 +384,13 @@ def _zpl(label: dict[str, str], printer: dict[str, Any], demo: bool) -> bytes:
             )
             y += phone_size + round(3 * scale)
 
+    if note_lines:
+        for line in note_lines:
+            commands.append(
+                f"^FO{margin},{y}^AXN,{note_size},{note_size}^FB{content_width},1,0,L,0^FD{line}^FS"
+            )
+            y += note_size + round(2 * scale)
+
     if y > height - margin:
         raise HTTPException(422, "Label content does not fit; shorten recipient, address, or asset metadata")
     commands.append("^XZ")
@@ -384,11 +407,18 @@ def _custom_zpl(template: str, label: dict[str, str], printer: dict[str, Any]) -
     }
     for field in ("city", "recipient", "address", "phone", "asset_name", "asset_type",
                   "inventory_number", "serial_number", "notes"):
-        values[field] = _clean_zpl_text(label.get(field, ""))
+        values[field] = _clean_zpl_text(label.get(field, ""), max_length=500 if field == "notes" else 180)
     rendered = re.sub(r"\{\{([a-z_]+)\}\}", lambda match: values[match.group(1)], template)
     if "{{" in rendered or "}}" in rendered:
         raise HTTPException(422, "ZPL template contains an unresolved placeholder")
     return rendered.encode("utf-8")
+
+
+def _repeat_label(raw: bytes, copies: int) -> bytes:
+    """Send complete ZPL formats back-to-back as one raw TCP job."""
+    if not 1 <= copies <= 100:
+        raise ValueError("copies must be between 1 and 100")
+    return raw * copies
 
 
 def _job(row: sqlite3.Row) -> dict[str, Any]:
@@ -484,7 +514,7 @@ def print_label(request: PrintRequest, authorization: str | None = Header(defaul
         for address in _resolve_private(printer["host"]):
             try:
                 with socket.create_connection((address, int(printer["port"])), timeout=5) as conn:
-                    conn.sendall(raw)
+                    conn.sendall(_repeat_label(raw, request.copies))
                 status = "sent"
                 break
             except OSError:

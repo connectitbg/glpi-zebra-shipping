@@ -51,6 +51,12 @@ final class PrintController extends AbstractController
                 \Html::back();
             }
         }
+        $copiesRaw = $request->request->getString('copies', '1');
+        $copies = filter_var($copiesRaw, FILTER_VALIDATE_INT);
+        if ($copies === false || $copies < 1 || $copies > 100) {
+            Session::addMessageAfterRedirect(__('Choose between 1 and 100 labels.', 'zebrashipping'), false, ERROR);
+            \Html::back();
+        }
         if ($form['printer_id'] === '') {
             Session::addMessageAfterRedirect(__('Choose a printer.', 'zebrashipping'), false, ERROR);
             \Html::back();
@@ -148,6 +154,7 @@ final class PrintController extends AbstractController
                 'installation_id' => $installState['installation_id'],
                 'trial_started_at' => $installState['installed_at'],
                 'license_file' => $license ?: null,
+                'copies' => $copies,
                 'label' => $label,
             ];
             $zplTemplate = ZplTemplate::get();
@@ -162,7 +169,11 @@ final class PrintController extends AbstractController
                 'service_job_id' => $job['id'] ?? null, 'status' => $job['status'] ?? 'sent',
                 'response_text' => null,
             ], ['id' => $jobRowId]);
-            Session::addMessageAfterRedirect(__('Print job sent to the printer.', 'zebrashipping'), true, INFO);
+            Session::addMessageAfterRedirect(
+                sprintf(_n('%d label sent to the printer.', '%d labels sent to the printer.', $copies, 'zebrashipping'), $copies),
+                true,
+                INFO
+            );
         } catch (\Throwable $error) {
             $safeMessage = mb_substr($error->getMessage(), 0, 400);
             $DB->update('glpi_plugin_zebrashipping_jobs', [

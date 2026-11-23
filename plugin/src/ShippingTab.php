@@ -70,6 +70,8 @@ final class ShippingTab extends \CommonGLPI
             self::textField('serial_number', __('Serial number', 'zebrashipping'), $serial);
             echo '<div class="mb-3"><label for="zs_notes">' . zebrashipping_escape(__('Notes', 'zebrashipping')) . '</label>';
             echo '<textarea class="form-control" id="zs_notes" name="notes" maxlength="500"></textarea></div>';
+            echo '<div class="mb-3"><label for="zs_copies">' . zebrashipping_escape(__('Number of labels', 'zebrashipping')) . '</label>';
+            echo '<input class="form-control" type="number" id="zs_copies" name="copies" value="1" min="1" max="100" step="1" required></div>';
             echo '<div class="mb-3"><label for="zs_printer">' . zebrashipping_escape(__('Printer', 'zebrashipping')) . '</label>';
             echo '<select class="form-select" id="zs_printer" name="printer_id" required>';
             foreach ($printers as $printer) {

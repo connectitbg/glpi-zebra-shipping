@@ -2,7 +2,7 @@
 
 ## Current status
 
-GLPI Zebra Shipping **0.2.11 declares GLPI 11.x and 12.x compatibility** and fixes validation of supported placeholders in Professional ZPL templates. Version 0.2.10 added the bilingual template guide. Version 0.2.9 introduced Professional-only custom ZPL templates. The 0.2.8 uninstall cleanup fix remains in place. The source remains GPL-2.0-or-later.
+GLPI Zebra Shipping **0.2.12 declares GLPI 11.x and 12.x compatibility**. It fixes printing of Notes in the built-in ZPL layout and adds a 1–100 label quantity selector. Version 0.2.11 fixed validation of supported placeholders in Professional ZPL templates. The source remains GPL-2.0-or-later.
 
 - Physical printing has been demonstrated with a networked Zebra ZD421 using 93 × 71 mm labels.
 - GLPI 11.0.9 and 12.0.2 installation and activation have been verified in test instances.
@@ -29,4 +29,4 @@ Public plugin-catalog validation and in-app Marketplace approval are separate de
 
 ## Deployment
 
-The plugin is deployed as version 0.2.7 on the owner's production GLPI and version 0.2.10 on the GLPI 12.0.2 test instance. Version 0.2.11 records GLPI 12 compatibility and fixes validation of the documented template placeholders. Version 0.2.8 added explicit configuration-key cleanup on uninstall; version 0.2.9 added the Professional ZPL editor; version 0.2.10 added the guide and settings-page link. The Print Service remains a separate local component. No printer address, customer database, service token, or signing key is part of the public source or plugin archive.
+Plugin 0.2.12 and Print Service 0.2.5 are deployed on the owner's production GLPI and the GLPI 12.0.2 test environment. The test environment confirmed the Notes and quantity changes before production deployment. The Print Service remains a separate local component. No printer address, customer database, service token, or signing key is part of the public source or plugin archive.

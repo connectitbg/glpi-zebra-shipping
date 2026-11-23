@@ -33,6 +33,8 @@ The sample configuration has `printers: []`. Add a printer later in **Setup → 
 4. In **Setup → Plugins → GLPI Zebra Shipping**, add each printer's connection settings and run the connectivity check.
 5. The 14-day demo starts from the plugin's first installation timestamp. Demo allows up to two enabled printers and 50 successful print jobs, marks labels `DEMO`, and keeps print history after expiration.
 
+On the shipping-label form, enter optional Notes and choose 1–100 copies for the print job. Notes appear in the built-in label when they fit the configured media. Shorten notes if the service reports that the label content does not fit, or use a Professional custom ZPL template for a different layout.
+
 ### License and recovery backup
 
 On the plugin settings page, administrators can edit and save a Professional license, download a recovery JSON file, or restore from pasted recovery JSON. The recovery file contains the license (when present), installation ID, original installation timestamp, and custom ZPL template (when configured). Keep it private because it contains the customer activation license.

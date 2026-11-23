@@ -27,6 +27,8 @@ Write each placeholder exactly as shown, including the double braces and lowerca
 | `{{serial_number}}` | Serial number | Prefilled from the linked asset when available; editable before printing |
 | `{{notes}}` | Additional notes | Notes field in the shipping-label form |
 
+The built-in label also prints notes when they fit the configured media. For a custom layout, `{{notes}}` contains the sanitized Notes value.
+
 Empty source fields become empty text. If a field should not print when empty, remove that field's ZPL line from the template; the template format has no conditional or branching tags. Placeholder names are case-sensitive; unsupported or malformed placeholders cause the print request to be rejected.
 
 ## Minimal example
@@ -56,13 +58,15 @@ This example prints a centered recipient heading and an address. Coordinates and
 5. Save, print a test label, inspect the physical result, and adjust the layout. The service does not calculate whether custom text will fit or automatically resize the layout.
 6. If the result is unusable, restore the previous template or clear the editor to return to the built-in layout.
 
-Values substituted from GLPI have ZPL command markers (`^` and `~`) and ASCII control characters removed, line breaks replaced with spaces, and text limited to 180 characters. This protects inserted record values from being interpreted as ZPL commands; it does not sanitize the template itself. Custom ZPL commands are passed to the configured printer. Only trusted GLPI administrators should edit templates, and printer-specific commands can move, erase, or otherwise change label output.
+Values substituted from GLPI have ZPL command markers (`^` and `~`) and ASCII control characters removed and line breaks replaced with spaces. Notes are limited to 500 characters; other record fields are limited to 180 characters. This protects inserted record values from being interpreted as ZPL commands; it does not sanitize the template itself. Custom ZPL commands are passed to the configured printer. Only trusted GLPI administrators should edit templates, and printer-specific commands can move, erase, or otherwise change label output.
 
 ## Български
 
 Персонализираните ZPL шаблони са функция на **Professional** версията. Необходим е валиден Professional лиценз както за записване на шаблона в GLPI, така и за отпечатването му чрез Print Service. В демо режима редакторът се вижда като заключен преглед, използва се вграденият шаблон и демо етикетите запазват надписа `DEMO`.
 
 Отворете **Настройка → Плъгини → GLPI Zebra Shipping** и намерете **Custom ZPL label template**. Поставете пълен ZPL формат и натиснете **Save ZPL template**. За връщане към стандартния етикет изтрийте съдържанието и запишете празното поле с активен Professional лиценз. Това не изтрива настройките на принтерите или историята на печата.
+
+Вграденият дизайн отпечатва и полето Notes, когато съдържанието се побира в зададения размер на етикета. От формата за етикет може да се избере от 1 до 100 еднакви етикета за едно задание.
 
 ### Тагове и данни
 
@@ -81,7 +85,7 @@ Values substituted from GLPI have ZPL command markers (`^` and `~`) and ASCII co
 | `{{serial_number}}` | Сериен номер | Попълва се от актива, ако е наличен; може да се редактира преди печат |
 | `{{notes}}` | Допълнителни бележки | Полето Notes във формата за етикет |
 
-Таговете се изписват точно с малки букви и двойни фигурни скоби. Празно поле се заменя с празен текст. Неподдържан или неправилно изписан таг води до отказ на заявката за печат.
+Таговете се изписват точно с малки букви и двойни фигурни скоби. Празно поле се заменя с празен текст. Бележките са ограничени до 500 знака, а останалите стойности от GLPI — до 180 знака. Неподдържан или неправилно изписан таг води до отказ на заявката за печат.
 
 ### Пример и безопасна редакция
 

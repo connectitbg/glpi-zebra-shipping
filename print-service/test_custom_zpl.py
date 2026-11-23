@@ -77,6 +77,38 @@ class CustomZplTests(unittest.TestCase):
         rendered = app._zpl(LABEL, PRINTER, demo=True).decode("utf-8")
         self.assertIn("^FDDEMO^FS", rendered)
 
+    def test_default_layout_prints_notes(self) -> None:
+        label = {**LABEL, "notes": "Handle with care"}
+        rendered = app._zpl(label, PRINTER, demo=False).decode("utf-8")
+        self.assertIn("^FDБележки: Handle with care^FS", rendered)
+
+    def test_default_layout_omits_empty_notes(self) -> None:
+        label = {**LABEL, "notes": ""}
+        rendered = app._zpl(label, PRINTER, demo=False).decode("utf-8")
+        self.assertNotIn("Бележки:", rendered)
+
+    def test_copy_count_is_bounded_and_repeats_complete_label(self) -> None:
+        request = app.PrintRequest(
+            request_id="test-request-004",
+            printer_id="printer-test",
+            installation_id="installation-test",
+            label=LABEL,
+            copies=3,
+        )
+        self.assertEqual(request.copies, 3)
+        self.assertEqual(app._repeat_label(b"^XA^XZ", 3), b"^XA^XZ^XA^XZ^XA^XZ")
+        for copies in (0, 101):
+            with self.subTest(copies=copies), self.assertRaises(ValueError):
+                app._repeat_label(b"^XA^XZ", copies)
+        with self.assertRaises(ValueError):
+            app.PrintRequest(
+                request_id="test-request-005",
+                printer_id="printer-test",
+                installation_id="installation-test",
+                label=LABEL,
+                copies=101,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
