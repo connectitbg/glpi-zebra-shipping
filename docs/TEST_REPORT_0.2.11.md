@@ -1,7 +1,7 @@
 # GLPI Zebra Shipping 0.2.11 — Test Report
 
-**Date:** 2026-11-22 (Europe/Sofia)
-**Environment:** Connect IT GLPI test instance, upgraded to GLPI 12.0.2; associated local Print Service. The deployed plugin version during the print test was 0.2.10. Version 0.2.11 changes the version/compatibility metadata and documentation only.
+**Date:** 2026-11-23 (Europe/Sofia)
+**Environment:** Connect IT GLPI test instance, upgraded to GLPI 12.0.2; associated local Print Service. The deployed plugin version during the recorded print test was 0.2.10. Version 0.2.11 adds the compatibility declaration and fixes the ZPL placeholder validator defect identified in the catalogue review.
 
 ## GLPI 12 compatibility
 
@@ -18,3 +18,13 @@
 ## Scope
 
 This report covers the GLPI plugin and Print Service job status only. It does not certify that the label physically printed, and it includes no printer-side configuration changes.
+
+## Catalogue review correction
+
+- Finding: the final placeholder check searched the original template for `{{` and `}}`, so it rejected templates even when all placeholders were valid and supported.
+- Correction: validate each placeholder against the allow-list, remove valid placeholder tokens for the malformed-delimiter check, and reject only leftover unmatched delimiters.
+- Regression cases cover accepted supported tokens and rejection of unsupported tokens, malformed delimiters, and invalid ZPL framing.
+- The exact release ZIP passed `unzip -t` on the Debian 12 GLPI 12.0.2 test host. All packaged plugin PHP files passed `php -l` under PHP 8.3.37.
+- The regression script passed against the `ZplTemplate.php` extracted from the release ZIP.
+- The archive was installed and enabled on the GLPI test instance. `plugin:list` reported GLPI Zebra Shipping 0.2.11 as `Enabled`.
+- No physical label was printed for this validator-only correction.

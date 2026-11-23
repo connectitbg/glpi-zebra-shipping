@@ -47,7 +47,12 @@ final class ZplTemplate
                 throw new \InvalidArgumentException(__('The ZPL template contains an unsupported placeholder.', 'zebrashipping'));
             }
         }
-        if (str_contains($template, '{{') || str_contains($template, '}}')) {
+        // Remove syntactically valid placeholders before checking for leftover
+        // delimiters. Checking the original template rejects every valid tag.
+        $templateWithoutPlaceholders = preg_replace('/\{\{[a-z_]+\}\}/', '', $template);
+        if ($templateWithoutPlaceholders === null
+            || str_contains($templateWithoutPlaceholders, '{')
+            || str_contains($templateWithoutPlaceholders, '}')) {
             throw new \InvalidArgumentException(__('The ZPL template contains an invalid placeholder.', 'zebrashipping'));
         }
 

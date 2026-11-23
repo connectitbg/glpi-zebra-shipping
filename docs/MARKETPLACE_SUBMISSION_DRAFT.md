@@ -29,7 +29,7 @@ The 0.2.10 test deployment was exercised on GLPI 12.0.2; 0.2.11 records that ver
 
 The plugin is intended for Zebra printers on the network and is expected to work with other printers accepting ZPL over raw TCP. Other models have not been individually validated. USB printer compatibility is unknown and unsupported; USB printing is out of scope and is not planned.
 
-The most recent catalog submission attempt returned `UNAVAILABLE_NAME`; publication has not been confirmed. The repository, stable release archive, and XML metadata are public, but catalog acceptance remains pending.
+The plugin was validated on the public GLPI Plugins catalogue during the 0.2.10 review. The in-app GLPI Marketplace review is separate and remains pending; approval is not automatic. Version 0.2.11 corrects the supported-placeholder validation issue found in the latest review and provides the release archive referenced by the XML.
 
 ## Remaining publication gates
 
